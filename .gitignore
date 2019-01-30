@@ -1,7 +1,11 @@
 lib/
 obj/
 include/
+bin/*
+!bin/*.zip
+!bin/data
 
 *.dll
 *.o
 *~
+*.exe
