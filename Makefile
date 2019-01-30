@@ -2,6 +2,7 @@ CC=g++
 
 SRC_DIR=./src/
 OBJ_DIR=./obj/
+OBJ_DIRMAKE=obj
 OBJECT_FILES=$(OBJ_DIR)eng_camera.o $(OBJ_DIR)eng_entry.o $(OBJ_DIR)eng_io.o $(OBJ_DIR)eng_object.o $(OBJ_DIR)eng_print.o $(OBJ_DIR)eng_render.o $(OBJ_DIR)eng_timer.o $(OBJ_DIR)eng_ogl_exception.o $(OBJ_DIR)eng_ogl_font.o $(OBJ_DIR)eng_ogl_framebuffer.o $(OBJ_DIR)eng_ogl_main.o $(OBJ_DIR)eng_ogl_mesh.o $(OBJ_DIR)eng_ogl_render.o $(OBJ_DIR)eng_ogl_shader.o $(OBJ_DIR)eng_ogl_texture.o $(OBJ_DIR)eng_ogl_test.o $(OBJ_DIR)gam_main.o
 
 LIB_WINDOWS=-L./lib/ -lmingw32 -lSDL2 -lSDL2_image -lopengl32 -lglew32 -lfreetype
@@ -12,12 +13,13 @@ LFLAGS=
 CFLAGS=-std=c++17 -Wall -g -DGLM_ENABLE_EXPERIMENTAL -DTED_OGL $(INCLUDE)
 
 BIN_DIR=./bin/
+BIN_DIRMAKE=bin
 BIN=program
 
 # This compiles the whole program.
 #$(CC) -Wall -DGLM_ENABLE_EXPERIMENTAL -DTED_OGL src/eng/camera.cpp src/eng/entry.cpp src/eng/io.cpp src/eng/object.cpp src/eng/print.cpp src/eng/render.cpp src/eng/timer.cpp src/eng/ogl/ogl_exception.cpp src/eng/ogl/ogl_font.cpp src/eng/ogl/ogl_framebuffer.cpp src/eng/ogl/ogl_main.cpp src/eng/ogl/ogl_mesh.cpp src/eng/ogl/ogl_render.cpp src/eng/ogl/ogl_shader.cpp src/eng/ogl/ogl_test.cpp src/eng/ogl/ogl_texture.cpp src/gam/main.cpp -o bin -I./ -I./include/ -L./lib/ -lmingw32 -lSDL2 -lSDL2_image -lopengl32 -lglew32 -lfreetype
 
-all: prepare program
+all:  program
 	@echo ==========DONE==========
 	
 $(OBJ_DIR)eng_camera.o: $(SRC_DIR)eng/camera.cpp
@@ -67,14 +69,15 @@ clean:
 # ================
 .PHONY: prepare
 prepare:
-	-@mkdir $(OBJ_DIR)
-	-@mkdir $(BIN_DIR)
+	echo "job PREPARE"
+	-@mkdir $(OBJ_DIRMAKE)
+	-@mkdir $(BIN_DIRMAKE)
 	
 # ================
 # Default build
 # ================
 .PHONY: program
-program: $(OBJ_DIR)eng_camera.o $(OBJ_DIR)eng_entry.o $(OBJ_DIR)eng_io.o $(OBJ_DIR)eng_object.o $(OBJ_DIR)eng_print.o $(OBJ_DIR)eng_render.o $(OBJ_DIR)eng_timer.o $(OBJ_DIR)eng_ogl_exception.o $(OBJ_DIR)eng_ogl_font.o $(OBJ_DIR)eng_ogl_framebuffer.o $(OBJ_DIR)eng_ogl_main.o $(OBJ_DIR)eng_ogl_mesh.o $(OBJ_DIR)eng_ogl_render.o $(OBJ_DIR)eng_ogl_shader.o $(OBJ_DIR)eng_ogl_texture.o $(OBJ_DIR)eng_ogl_test.o $(OBJ_DIR)gam_main.o
+program: prepare $(OBJ_DIR)eng_camera.o $(OBJ_DIR)eng_entry.o $(OBJ_DIR)eng_io.o $(OBJ_DIR)eng_object.o $(OBJ_DIR)eng_print.o $(OBJ_DIR)eng_render.o $(OBJ_DIR)eng_timer.o $(OBJ_DIR)eng_ogl_exception.o $(OBJ_DIR)eng_ogl_font.o $(OBJ_DIR)eng_ogl_framebuffer.o $(OBJ_DIR)eng_ogl_main.o $(OBJ_DIR)eng_ogl_mesh.o $(OBJ_DIR)eng_ogl_render.o $(OBJ_DIR)eng_ogl_shader.o $(OBJ_DIR)eng_ogl_texture.o $(OBJ_DIR)eng_ogl_test.o $(OBJ_DIR)gam_main.o
 	$(CC) $(LFLAGS) $(OBJECT_FILES) -o $(BIN_DIR)$(BIN) $(LIB)
 
 # ================
@@ -82,5 +85,5 @@ program: $(OBJ_DIR)eng_camera.o $(OBJ_DIR)eng_entry.o $(OBJ_DIR)eng_io.o $(OBJ_D
 # Using LIB_WINDOWS
 # ================
 .PHONY: program_windows
-program_windows: $(OBJ_DIR)eng_camera.o $(OBJ_DIR)eng_entry.o $(OBJ_DIR)eng_io.o $(OBJ_DIR)eng_object.o $(OBJ_DIR)eng_print.o $(OBJ_DIR)eng_render.o $(OBJ_DIR)eng_timer.o $(OBJ_DIR)eng_ogl_exception.o $(OBJ_DIR)eng_ogl_font.o $(OBJ_DIR)eng_ogl_framebuffer.o $(OBJ_DIR)eng_ogl_main.o $(OBJ_DIR)eng_ogl_mesh.o $(OBJ_DIR)eng_ogl_render.o $(OBJ_DIR)eng_ogl_shader.o $(OBJ_DIR)eng_ogl_texture.o $(OBJ_DIR)eng_ogl_test.o $(OBJ_DIR)gam_main.o
+program_windows: prepare $(OBJ_DIR)eng_camera.o $(OBJ_DIR)eng_entry.o $(OBJ_DIR)eng_io.o $(OBJ_DIR)eng_object.o $(OBJ_DIR)eng_print.o $(OBJ_DIR)eng_render.o $(OBJ_DIR)eng_timer.o $(OBJ_DIR)eng_ogl_exception.o $(OBJ_DIR)eng_ogl_font.o $(OBJ_DIR)eng_ogl_framebuffer.o $(OBJ_DIR)eng_ogl_main.o $(OBJ_DIR)eng_ogl_mesh.o $(OBJ_DIR)eng_ogl_render.o $(OBJ_DIR)eng_ogl_shader.o $(OBJ_DIR)eng_ogl_texture.o $(OBJ_DIR)eng_ogl_test.o $(OBJ_DIR)gam_main.o
 	$(CC) $(LFLAGS) $(OBJECT_FILES) -o $(BIN_DIR)$(BIN) $(LIB_WINDOWS)
