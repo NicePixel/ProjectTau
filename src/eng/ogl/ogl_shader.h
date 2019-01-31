@@ -1,3 +1,6 @@
+/* ogl_shader.h 
+ * Shader manipulation.
+ */
 #pragma once
 #include "../global.h"
 #include <GL/glew.h>
@@ -5,6 +8,14 @@
 #include <map>
 #include <vector>
 
+// Every shader has a program ID assigned to it.
+// Calling `tau_gra_shader_use` will make sure the subsequent render calls use
+// the wanted shader.
+//
+// Manipulate the execution of the shaders by using and updating the shader's
+// uniform values via `tau_gra_shader_setuniform*` functions.
+// The SHADER struct type has a map of all known uniforms. The map's key is 
+// the uniform ID used to write or read the value of the uniform.
 typedef std::map<std::string, GLint> mapuniform;
 typedef struct _SHADER
 {

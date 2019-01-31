@@ -1,7 +1,5 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <GL/glew.h>
-#include <GL/GL.h>
 #include <map>
 #include "ogl_texture.h"
 #include "ogl_exception.h"

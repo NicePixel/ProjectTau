@@ -1,9 +1,20 @@
+/* ogl_texture.h
+ * Texture structure.
+ */
 #pragma once
 #include "../global.h"
+#include <GL/glew.h>
+#include <GL/GL.h>
 
+// Shaders can use multiple textures at once.
+// By default, GL_TEXTURE0, the first texture unit, is used.
+// 
+// Calling `tau_gra_texture_use` will set the texture to be used by the 
+// currently active texture unit!!!
 #define TAU_TEXTUREUNIT_0 GL_TEXTURE0
 #define TAU_TEXTUREUNIT_1 GL_TEXTURE1
 typedef GLenum textureunit;
+
 typedef struct _TEXTURE
 {
 	GLuint texture;

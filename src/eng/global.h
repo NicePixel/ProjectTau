@@ -1,1 +1,1 @@
-#pragma once
+/* Denote void... */

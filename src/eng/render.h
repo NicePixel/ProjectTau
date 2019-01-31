@@ -1,16 +1,21 @@
+/* render.h
+ * Render functions independent of the currently used API
+ */
 #pragma once
 
-#include "object.h"
-
-// Include these because they may be useful for the unit that wants to render.
+// Include functions that work differently depending on the graphics API used
+#include "r_main.h"
+#include "r_texture.h"
+#include "r_shader.h"
+#include "r_mesh.h"
+#include "r_font.h"
+#include "r_framebuffer.h"
 #ifdef TED_OGL
-#include "../eng/ogl/ogl_render.h"
-#include "../eng/ogl/ogl_shader.h"
-#include "../eng/ogl/ogl_mesh.h"
-#include "../eng/ogl/ogl_main.h"
-#include "../eng/ogl/ogl_texture.h"
+#include "ogl/ogl_render.h"
 #else
-#error "Vulkan is not implement"
+#error "Vulkan is not implemented"
 #endif
+
+#include "object.h"
 
 void tau_gra_ren_object(CTauObject* obj);

@@ -1,9 +1,4 @@
 #include "object.h"
-#ifdef TED_OGL
-#include "ogl/ogl_mesh.h"
-#else
-#error "Vulkan is not implement"
-#endif
 
 CTauObject::CTauObject(float x, float y, float z, int uid, MESH* mesh):
 	m_uid(uid)

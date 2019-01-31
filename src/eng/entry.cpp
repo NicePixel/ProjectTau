@@ -1,13 +1,9 @@
 #include "print.h"
-#ifdef TED_OGL
-#include "ogl/ogl_main.h"
-#include "ogl/ogl_exception.h"
-#include "ogl/ogl_test.h"
-#include "ogl/ogl_font.h"
-#include "ogl/ogl_mesh.h"
-#else
-#error "Vulkan is not implement"
-#endif
+#include "r_mesh.h"
+#include "r_font.h"
+#include "r_test.h"
+#include "r_exception.h"
+#include "r_main.h"
 
 #undef  TED_CURSUB
 #define TED_CURSUB "tau_init"

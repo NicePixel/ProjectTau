@@ -1,3 +1,6 @@
+/* ogl_font.h
+ * Font rendering
+ */
 #pragma once
 
 #include <exception>
@@ -36,18 +39,4 @@ public:
 	}
 private:
 	const char* message;
-};
-
-class CTauGraFont
-{
-public:
-	CTauGraFont(const char* filepath, int size);
-	~CTauGraFont(void);
-
-	void RenderText(const std::string& text, GLfloat x, GLfloat y, GLfloat scale);
-
-private:
-
-	std::map<GLchar, FACE_CHARACTER> m_characters;
-	glm::mat4 m_projection;
 };

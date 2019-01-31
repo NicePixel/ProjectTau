@@ -1,3 +1,8 @@
+/* ogl_test.h
+ * Graphical tests.
+ *
+ * TODO remove this. Tests are unnecessary
+ */
 #pragma once
 
 // Run all graphical tests!

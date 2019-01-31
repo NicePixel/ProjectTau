@@ -25,8 +25,6 @@ int main(int argc, char* argv[])
 #include "../eng/object.h"
 #include "../eng/camera.h"
 #include "../eng/render.h"
-#include "../eng/font.h"
-#include "../eng/framebuffer.h"
 #undef  TED_CURSUB
 #define TED_CURSUB "knot"
 void knot(void)
