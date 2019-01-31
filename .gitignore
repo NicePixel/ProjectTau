@@ -5,6 +5,9 @@ bin/*
 !bin/*.zip
 !bin/data
 
+*.blend
+*.blend1
+*.mtl
 *.dll
 *.o
 *~
