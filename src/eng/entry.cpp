@@ -1,7 +1,6 @@
 #include "print.h"
 #include "r_mesh.h"
 #include "r_font.h"
-#include "r_test.h"
 #include "r_exception.h"
 #include "r_main.h"
 
@@ -37,8 +36,6 @@ void tau_init(const char* programName)
 	}
 
 	TED_PRINT_INFO("Initialization seems successful.");
-	if(0)
-		tau_gra_test_runall();
 }
 
 #undef  TED_CURSUB
