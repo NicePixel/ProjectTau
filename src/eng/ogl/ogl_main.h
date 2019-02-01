@@ -6,8 +6,9 @@
 
 // Initialize the graphics subsystem
 // Calls SDL init functions, GLEW, create a GL context, ...
+// Calls other init functions, such as `tau_gra_*_init()`
 // Exceptions:
-// 	CGraException
+// 	CGraException, CTauGraFontException
 void tau_gra_init(const char* windowTitle);
 
 // Show the current render to the screen

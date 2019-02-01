@@ -15,12 +15,16 @@ void tau_init(const char* programName)
 	try
 	{
 		tau_gra_init(programName);
-		tau_gra_font_init();
-		tau_gra_mesh_init();
 	}
 	catch (CTauGraException e)
 	{
 		TED_PRINT_ERROR("Graphics initialization error! Error message is in the next printed line.");
+		TED_PRINT_ERROR(e.what());
+		allsystemsgo = 0;
+	}
+	catch(CTauGraFontException e)
+	{
+		TED_PRINT_ERROR("Font initialization error! Error message is in the next printed line.");
 		TED_PRINT_ERROR(e.what());
 		allsystemsgo = 0;
 	}

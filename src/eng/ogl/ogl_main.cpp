@@ -2,6 +2,7 @@
 #include "ogl_exception.h"
 #include "ogl_shader.h"
 #include "ogl_mesh.h"
+#include "ogl_font.h"
 #include "ogl_texture.h"
 #include "../print.h"
 #include <SDL2/SDL.h>
@@ -42,6 +43,10 @@ void tau_gra_init(const char* windowTitle)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
+	
+	// Call other initialization functions
+	tau_gra_font_init();
+	tau_gra_mesh_init();
 }
 
 #undef  TED_CURSUB
