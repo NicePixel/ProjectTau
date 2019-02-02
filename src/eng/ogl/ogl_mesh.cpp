@@ -66,8 +66,6 @@ void loadobj(GLuint* outVBO, GLuint* outVAO, const char* objfile, GLuint* outTot
 	GLuint countVertices = 0;
 	int lineCount = 1;
 
-	tau_timer_start();
-
 	// Read line by line, splitting every line into tokens.
 	std::ifstream infile(objfile);
 	while (std::getline(infile, line))
@@ -214,16 +212,18 @@ void loadobj(GLuint* outVBO, GLuint* outVAO, const char* objfile, GLuint* outTot
 	glBufferData(GL_ARRAY_BUFFER, datacombined.size() * sizeof(GLfloat), &datacombined[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-
-	TED_PRINT_INFO(std::string("Loading time taken [s]: ") + std::to_string(tau_timer_stop()));
 }
 
+#undef  TED_CURSUB
+#define TED_CURSUB "tau_gra_mesh_make"
 MESH tau_gra_mesh_make(const char* filepath)
 {
 	MESH m;
-
+	TED_PRINT_INFO(std::string("Loading ") + filepath);
+	tau_timer_start();
 	loadobj(&m.vbo, &m.vao, filepath, &m.totalvertices);
-
+	TED_PRINT_INFO(std::string("\tTime taken [s]: ") + std::to_string(tau_timer_stop()));
+	TED_PRINT_INFO(std::string("\tVertex amount : ") + std::to_string(m.totalvertices));
 	return m;
 }
 
