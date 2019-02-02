@@ -37,22 +37,17 @@ void knot(void)
 	SDL_Event e;
 
 	// Resources
-	MESH mesh_terrain       = tau_gra_mesh_make("data/models/test_scene.obj");
-	MESH mesh_sphere        = tau_gra_mesh_make("data/models/sphere.obj");
-	MESH mesh_strip         = tau_gra_mesh_make("data/models/bio_strip.obj");
+	MESH mesh_terrain       = tau_gra_mesh_make("data/models/map0.obj");
 	SHADER shader_default   = tau_gra_shader_make("data/shaders/default_vtx.glsl", "data/shaders/default_frg.glsl");
 	SHADER shader_text      = tau_gra_shader_make("data/shaders/font_vtx.glsl", "data/shaders/font_frg.glsl");
 	SHADER shader_screen    = tau_gra_shader_make("data/shaders/screen_vtx.glsl", "data/shaders/screen_frg.glsl");
-	TEXTURE texture_wyvern  = tau_gra_texture_make("data/textures/llvm.png");
 	TEXTURE texture_chk     = tau_gra_texture_make("data/textures/checkerboard.png");
 	FONT font_default       = tau_gra_font_make("data/fonts/default.ttf", 32);
 	FRAMEBUFFER framebuffer = tau_gra_framebuffer_make(800, 600);
 
 	// Objects or entities
-	CTauCamera*     camera      = new CTauCamera(0.0, 1.0, 0.0);
-	CTauObject*     obj_sphere  = new CTauObject(0.0, 1.0, 0.0, -1, &mesh_sphere);
+	CTauCamera*     camera      = new CTauCamera(0.0, 6.0, 0.0);
 	CTauObject*     obj_terrain = new CTauObject(0.0, 0.0, 0.0, -1, &mesh_terrain);
-	CTauObject*     obj_strip   = new CTauObject(0.0, 1.0, 0.0, -1, &mesh_strip);
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	SDL_GetMouseState(&mx_old, &my_old);
@@ -60,8 +55,8 @@ void knot(void)
 	{
 		totaltime += deltatime / 10.0f;
 
-		glm::vec3 lightpos = glm::vec3(4.0 * cos(totaltime), 4.0, 4.0 * sin(totaltime));
-		//glm::vec3 lightpos = glm::vec3(4.0, 4.0, -4.0);
+		//glm::vec3 lightpos = glm::vec3(4.0 * cos(totaltime), 4.0, 4.0 * sin(totaltime));
+		glm::vec3 lightpos = glm::vec3(4.0, 4.0, -4.0);
 		glm::mat4 text_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
 
 
@@ -99,24 +94,9 @@ void knot(void)
 
 		// Terrain
 		tau_gra_shader_setuniformMat4(&shader_default, "model", obj_terrain->GetValueMat4Position());
-		tau_gra_shader_setuniformFlt1(&shader_default, "uvscale", 2048.0f);
+		tau_gra_shader_setuniformFlt1(&shader_default, "uvscale", 1.0f);
 		tau_gra_texture_use(&texture_chk, TAU_TEXTUREUNIT_0);
 		tau_gra_ren_mesh(obj_terrain->GetMesh());
-
-		// Sphere
-		tau_gra_shader_setuniformMat4(&shader_default, "model", obj_sphere->GetValueMat4Position());
-		tau_gra_shader_setuniformFlt1(&shader_default, "uvscale", 8.0f);
-		tau_gra_texture_use(&texture_wyvern, TAU_TEXTUREUNIT_0);
-		tau_gra_ren_mesh(obj_sphere->GetMesh());
-
-		// Strip (no texture)
-		glm::vec3 strip_color = glm::vec3(1.0, 0.0, 0.0);
-		tau_gra_shader_setuniformInt1(&shader_default, "onlycolor", 1);
-		tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(strip_color));
-		tau_gra_shader_setuniformMat4(&shader_default, "model", obj_strip->GetValueMat4Position());
-		tau_gra_texture_use(&texture_wyvern, TAU_TEXTUREUNIT_0);
-		//tau_gra_ren_mesh(obj_strip->GetMesh());
-		tau_gra_texture_unuse();
 
 		// Text
 		tau_gra_shader_use(&shader_text);
@@ -140,9 +120,7 @@ void knot(void)
 	} while (r);
 
 	delete(camera);
-	delete(obj_sphere);
 	delete(obj_terrain);
-	delete(obj_strip);
 
 	tau_gra_framebuffer_destroy(&framebuffer);
 	tau_gra_font_destroy(&font_default);
@@ -150,9 +128,6 @@ void knot(void)
 	tau_gra_shader_destroy(&shader_text);
 	tau_gra_shader_destroy(&shader_screen);
 	tau_gra_texture_destroy(&texture_chk);
-	tau_gra_texture_destroy(&texture_wyvern);
 	tau_gra_mesh_delete(&mesh_terrain);
-	tau_gra_mesh_delete(&mesh_sphere);
-	tau_gra_mesh_delete(&mesh_strip);
 
 }

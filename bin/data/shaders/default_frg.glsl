@@ -14,9 +14,11 @@ out vec4 color;
 
 void main(void)
 {
-	int pointLight = 1;
+	int pointLight = 0;
 	vec3 norm     = normalize(normal);
 	vec3 lightDir, diffuse;
+	vec3 ambient = vec3(0.4, 0.4, 0.4);
+	vec3 lightColor = vec3(0.6, 0.6, 0.6);
 	float diff;
 	
 	if (pointLight)
@@ -25,7 +27,7 @@ void main(void)
 		lightDir = normalize(lightpos);
 	
 	diff    = max(dot(norm, lightDir.xyz), 0.0);
-	diffuse = diff * vec3(1.0, 1.0, 1.0);
+	diffuse = (diff * lightColor) + ambient;
 	
 	if (onlycolor)
 	{
