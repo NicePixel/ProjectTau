@@ -11,6 +11,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include "../timer.h"
+#include <stdexcept>
 
 static GLuint VBOsqaure, VAOsquare;
 
@@ -66,8 +67,15 @@ void loadobj(GLuint* outVBO, GLuint* outVAO, const char* objfile, GLuint* outTot
 	GLuint countVertices = 0;
 	int lineCount = 1;
 
-	// Read line by line, splitting every line into tokens.
+	// Input file
 	std::ifstream infile(objfile);
+	if (!infile.good())
+	{
+		TED_PRINT_ERROR       ("Can't open file for reading!");
+		throw CTauGraException("Can't open file for reading!");
+	}
+	
+	// Read line by line, splitting every line into tokens.
 	while (std::getline(infile, line))
 	{
 		const char* cline = line.c_str();
