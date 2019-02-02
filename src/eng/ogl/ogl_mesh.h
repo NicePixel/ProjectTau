@@ -32,7 +32,7 @@ void tau_gra_mesh_quit(void);
 // The .obj loader is good enough for the simple job it does. Do not feed it 
 // enormous files though.
 //
-// Will throw CTauGraException if things wrong.
+// Will throw CTauGraException if things go wrong.
 MESH tau_gra_mesh_make(const char* filepath);
 void tau_gra_mesh_delete(MESH* mesh);
 
