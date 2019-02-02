@@ -26,3 +26,18 @@ void tau_gra_clear(int what);
 
 void tau_gra_disableDepthTest(void);
 void tau_gra_enableDepthTest(void);
+
+// Hold data about the current state of the window, such as its W/H, the mode...
+typedef struct
+{
+	int width, height;
+	int mode;
+} TVIDEO_INFO;
+
+TVIDEO_INFO tau_gra_videogetinfo(void);
+
+// Switch video modes
+#define TAU_VIDEOMODE_WINDOW     0
+#define TAU_VIDEOMODE_FULLSCREEN SDL_WINDOW_FULLSCREEN
+void tau_gra_videomode(int mode);
+

@@ -68,6 +68,18 @@ void knot(void)
 			if (e.type == SDL_QUIT)
 				r = 0;
 		}
+		if (keys[SDL_SCANCODE_F2])
+		{
+			TVIDEO_INFO vid = tau_gra_videogetinfo();
+			if (vid.mode == TAU_VIDEOMODE_FULLSCREEN)
+			{
+				tau_gra_videomode(TAU_VIDEOMODE_WINDOW);
+			}
+			else
+			{
+				tau_gra_videomode(TAU_VIDEOMODE_FULLSCREEN);
+			}
+		}
 		if (keys[SDL_SCANCODE_UP])
 			camera->Forward(1.0f * deltatime);
 		if (keys[SDL_SCANCODE_DOWN])

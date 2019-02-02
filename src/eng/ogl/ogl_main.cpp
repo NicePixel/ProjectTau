@@ -11,6 +11,7 @@
 
 static SDL_Window* window = nullptr;
 static SDL_GLContext context;
+static TVIDEO_INFO videoinfo;
 
 #undef  TED_CURSUB
 #define TED_CURSUB "tau_gra_init"
@@ -47,6 +48,10 @@ void tau_gra_init(const char* windowTitle)
 	// Call other initialization functions
 	tau_gra_font_init();
 	tau_gra_mesh_init();
+	
+	videoinfo.width  = 800;
+	videoinfo.height = 600;
+	videoinfo.mode   = TAU_VIDEOMODE_WINDOW;
 }
 
 #undef  TED_CURSUB
@@ -75,6 +80,17 @@ void tau_gra_disableDepthTest(void)
 void tau_gra_enableDepthTest(void)
 {
 	glEnable(GL_DEPTH_TEST);
+}
+
+TVIDEO_INFO tau_gra_videogetinfo(void)
+{
+	return videoinfo;
+}
+
+void tau_gra_videomode(int mode)
+{
+	SDL_SetWindowFullscreen(window, mode);
+	videoinfo.mode = mode;
 }
 
 /* Courtesy of http://ascii-art.de/
