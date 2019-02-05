@@ -118,7 +118,9 @@ void knot(void)
 		tau_gra_shader_use(&shader_text);
 		tau_gra_shader_setuniformInt1(&shader_text, "texture0", 0);
 		tau_gra_shader_setuniformMat4(&shader_text, "proj", glm::value_ptr(text_projection));
+		tau_gra_disableDepthTest();
 		tau_gra_font_rendertext(&font_default, "$ cat nyx > talk", 0, 16, 1.0f);
+		tau_gra_enableDepthTest();
 
 		// Render to screen
 		tau_gra_framebuffer_use(nullptr);
