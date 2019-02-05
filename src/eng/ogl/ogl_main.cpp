@@ -65,12 +65,7 @@ void tau_gra_updatewindow(void)
 #define TED_CURSUB "tau_gra_updatewindow"
 void tau_gra_clear(int what)
 {
-	if (what == TAU_CLEAR_COLORBUFFER)
-		glClear(GL_COLOR_BUFFER_BIT);
-	if (what == TAU_CLEAR_DEPTHBUFFER)
-		glClear(GL_DEPTH_BUFFER_BIT);
-	if (what == TAU_CLEAR_COLORANDDEPTHBUFFER)
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void tau_gra_disableDepthTest(void)

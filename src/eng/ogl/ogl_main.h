@@ -19,9 +19,9 @@ void tau_gra_updatewindow(void);
 // check "ogl_framebuffer.h" for info.
 //
 // By default this clears the screen.
-#define TAU_CLEAR_COLORBUFFER 1
-#define TAU_CLEAR_DEPTHBUFFER 2
-#define TAU_CLEAR_COLORANDDEPTHBUFFER 3
+#define TAU_CLEAR_COLORBUFFER GL_COLOR_BUFFER_BIT
+#define TAU_CLEAR_DEPTHBUFFER GL_DEPTH_BUFFER_BIT
+#define TAU_CLEAR_COLORANDDEPTHBUFFER (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 void tau_gra_clear(int what);
 
 void tau_gra_disableDepthTest(void);
