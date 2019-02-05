@@ -41,6 +41,7 @@ void knot(void)
 	SHADER shader_default   = tau_gra_shader_make("data/shaders/default_vtx.glsl", "data/shaders/default_frg.glsl");
 	SHADER shader_text      = tau_gra_shader_make("data/shaders/font_vtx.glsl", "data/shaders/font_frg.glsl");
 	SHADER shader_screen    = tau_gra_shader_make("data/shaders/screen_vtx.glsl", "data/shaders/screen_frg.glsl");
+	SHADER shader_backdrop  = tau_gra_shader_make("data/shaders/backdrop_vtx.glsl", "data/shaders/backdrop_frg.glsl");
 	TEXTURE texture_chk     = tau_gra_texture_make("data/textures/checkerboard.png");
 	FONT font_default       = tau_gra_font_make("data/fonts/default.ttf", 32);
 	FRAMEBUFFER framebuffer = tau_gra_framebuffer_make(800, 600);
@@ -94,6 +95,13 @@ void knot(void)
 		// Draw (to the framebuffer)
 		tau_gra_framebuffer_use(&framebuffer);
 		tau_gra_clear(TAU_CLEAR_DEPTHBUFFER);
+		
+		// Backdrop, the ground and the ceiling
+		tau_gra_shader_use(&shader_backdrop);
+		tau_gra_disableDepthTest();
+		tau_gra_ren_mesh_unitsquare();
+		tau_gra_enableDepthTest();
+		
 		tau_gra_shader_use(&shader_default);
 		tau_gra_shader_setuniformInt1(&shader_default, "texture0", 0);
 		tau_gra_shader_setuniformInt1(&shader_default, "onlycolor", 0);
@@ -132,6 +140,7 @@ void knot(void)
 
 	tau_gra_framebuffer_destroy(&framebuffer);
 	tau_gra_font_destroy(&font_default);
+	tau_gra_shader_destroy(&shader_backdrop);
 	tau_gra_shader_destroy(&shader_default);
 	tau_gra_shader_destroy(&shader_text);
 	tau_gra_shader_destroy(&shader_screen);
