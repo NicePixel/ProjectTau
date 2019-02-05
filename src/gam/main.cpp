@@ -55,10 +55,7 @@ void knot(void)
 	{
 		totaltime += deltatime / 10.0f;
 
-		//glm::vec3 lightpos = glm::vec3(4.0 * cos(totaltime), 4.0, 4.0 * sin(totaltime));
-		glm::vec3 lightpos = glm::vec3(4.0, 4.0, -4.0);
 		glm::mat4 text_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-
 
 		SDL_PumpEvents();
 		const Uint8* keys = SDL_GetKeyboardState(0);
@@ -96,13 +93,12 @@ void knot(void)
 
 		// Draw (to the framebuffer)
 		tau_gra_framebuffer_use(&framebuffer);
-		tau_gra_clear(TAU_CLEAR_COLORANDDEPTHBUFFER);
+		tau_gra_clear(TAU_CLEAR_DEPTHBUFFER);
 		tau_gra_shader_use(&shader_default);
 		tau_gra_shader_setuniformInt1(&shader_default, "texture0", 0);
 		tau_gra_shader_setuniformInt1(&shader_default, "onlycolor", 0);
 		tau_gra_shader_setuniformMat4(&shader_default, "view",     camera->GetValueView());
 		tau_gra_shader_setuniformMat4(&shader_default, "proj",     camera->GetValueProjection());
-		tau_gra_shader_setuniformFlt3(&shader_default, "lightpos", glm::value_ptr(lightpos));
 
 		// Terrain
 		tau_gra_shader_setuniformMat4(&shader_default, "model", obj_terrain->GetValueMat4Position());
