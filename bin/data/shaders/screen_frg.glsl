@@ -10,9 +10,8 @@ out vec4 color;
 
 const float offset = 1.0 / 600.0;  
 
-void main(void)
+vec3 postprocessing(void)
 {
-/*
 	vec2 offsets[9] = vec2[](
         vec2(-offset,  offset), // top-left
         vec2( 0.0f,    offset), // top-center
@@ -34,12 +33,18 @@ void main(void)
     {
         sampleTex[i] = vec3(texture(texture0, uv + offsets[i]));
     }
-    vec3 col = vec3(0.0);
+	
+    vec3 output_color = vec3(0.0);
     for(int i = 0; i < 9; i++)
-        col += sampleTex[i] * kernel[i];
-*/
-	vec3 col = texture(texture0, uv).rgb;
+        output_color += sampleTex[i] * kernel[i];
+		
+	return output_color;
+}
+
+void main(void)
+{
+	vec4 col = texture(texture0, uv);
 	color.a = 1.0;
 	
-	color.rgb = pow(col, vec3(2.2, 2.2, 2.2));
+	color.rgb = pow(col.rgb, vec3(2.2, 2.2, 2.2));
 }
