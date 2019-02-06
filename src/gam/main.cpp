@@ -25,6 +25,7 @@ int main(int argc, char* argv[])
 #include "../eng/object.h"
 #include "../eng/camera.h"
 #include "../eng/render.h"
+#include "world.h"
 #undef  TED_CURSUB
 #define TED_CURSUB "knot"
 void knot(void)
@@ -35,28 +36,15 @@ void knot(void)
 	float totaltime = 0.0f;
 	
 	SDL_Event e;
+	g_world_start();
 
-	// Resources
-	MESH mesh_terrain       = tau_gra_mesh_make("data/models/map0.obj");
-	SHADER shader_default   = tau_gra_shader_make("data/shaders/default_vtx.glsl", "data/shaders/default_frg.glsl");
-	SHADER shader_text      = tau_gra_shader_make("data/shaders/font_vtx.glsl", "data/shaders/font_frg.glsl");
-	SHADER shader_screen    = tau_gra_shader_make("data/shaders/screen_vtx.glsl", "data/shaders/screen_frg.glsl");
-	SHADER shader_backdrop  = tau_gra_shader_make("data/shaders/backdrop_vtx.glsl", "data/shaders/backdrop_frg.glsl");
-	TEXTURE texture_chk     = tau_gra_texture_make("data/textures/wall0.png");
-	FONT font_default       = tau_gra_font_make("data/fonts/default.ttf", 32);
-	FRAMEBUFFER framebuffer = tau_gra_framebuffer_make(800, 600);
-
-	// Objects or entities
-	CTauCamera*     camera      = new CTauCamera(0.0, 6.0, 0.0);
-	CTauObject*     obj_terrain = new CTauObject(0.0, 0.0, 0.0, -1, &mesh_terrain);
+	CTauCamera* camera = new CTauCamera(0.0, 6.0, 0.0);
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	SDL_GetMouseState(&mx_old, &my_old);
 	do
 	{
 		totaltime += deltatime / 10.0f;
-
-		glm::mat4 text_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
 
 		SDL_PumpEvents();
 		const Uint8* keys = SDL_GetKeyboardState(0);
@@ -92,44 +80,7 @@ void knot(void)
 		// Tick
 		rad += 0.01f;
 
-		// Draw (to the framebuffer)
-		tau_gra_framebuffer_use(&framebuffer);
-		tau_gra_clear(TAU_CLEAR_DEPTHBUFFER);
-		
-		// Backdrop, the ground and the ceiling
-		tau_gra_shader_use(&shader_backdrop);
-		tau_gra_disableDepthTest();
-		tau_gra_ren_mesh_unitsquare();
-		tau_gra_enableDepthTest();
-		
-		tau_gra_shader_use(&shader_default);
-		tau_gra_shader_setuniformInt1(&shader_default, "texture0", 0);
-		tau_gra_shader_setuniformInt1(&shader_default, "onlycolor", 0);
-		tau_gra_shader_setuniformMat4(&shader_default, "view",     camera->GetValueView());
-		tau_gra_shader_setuniformMat4(&shader_default, "proj",     camera->GetValueProjection());
-
-		// Terrain
-		tau_gra_shader_setuniformMat4(&shader_default, "model", obj_terrain->GetValueMat4Position());
-		tau_gra_shader_setuniformFlt1(&shader_default, "uvscale", 1.0f);
-		tau_gra_texture_use(&texture_chk, TAU_TEXTUREUNIT_0);
-		tau_gra_ren_mesh(obj_terrain->GetMesh());
-
-		// Text
-		tau_gra_shader_use(&shader_text);
-		tau_gra_shader_setuniformInt1(&shader_text, "texture0", 0);
-		tau_gra_shader_setuniformMat4(&shader_text, "proj", glm::value_ptr(text_projection));
-		tau_gra_disableDepthTest();
-		tau_gra_font_rendertext(&font_default, "$ cat nyx > talk", 0, 16, 1.0f);
-		tau_gra_enableDepthTest();
-
-		// Render to screen
-		tau_gra_framebuffer_use(nullptr);
-		tau_gra_clear(TAU_CLEAR_DEPTHBUFFER);
-		tau_gra_shader_use(&shader_screen);
-		tau_gra_shader_setuniformInt1(&shader_screen, "texture0", 0);
-		tau_gra_texture_use(&framebuffer.attachedtexture, TAU_TEXTUREUNIT_0);
-		tau_gra_ren_mesh_unitsquare();
-
+		g_world_tick(camera);
 		tau_gra_updatewindow();
 		SDL_Delay(10);
 
@@ -138,15 +89,6 @@ void knot(void)
 	} while (r);
 
 	delete(camera);
-	delete(obj_terrain);
 
-	tau_gra_framebuffer_destroy(&framebuffer);
-	tau_gra_font_destroy(&font_default);
-	tau_gra_shader_destroy(&shader_backdrop);
-	tau_gra_shader_destroy(&shader_default);
-	tau_gra_shader_destroy(&shader_text);
-	tau_gra_shader_destroy(&shader_screen);
-	tau_gra_texture_destroy(&texture_chk);
-	tau_gra_mesh_delete(&mesh_terrain);
-
+	g_world_quit();
 }
