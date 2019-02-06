@@ -9,6 +9,7 @@ uniform sampler2D texture1;
 out vec4 color;
 
 const float offset = 1.0 / 600.0;  
+const float gamma  = 2.0;
 
 vec3 postprocessing(void)
 {
@@ -46,5 +47,5 @@ void main(void)
 	vec4 col = texture(texture0, uv);
 	color.a = 1.0;
 	
-	color.rgb = pow(col.rgb, vec3(2.2, 2.2, 2.2));
+	color.rgb = pow(col.rgb, vec3(gamma, gamma, gamma));
 }
