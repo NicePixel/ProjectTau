@@ -22,6 +22,42 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+// `fps_tick` calculates the time difference between calls to itself.
+// The output is the delta time, the time taken per frame, in milliseconds.
+// `fps` is the amount of frames per second.
+//
+// Notice that it takes at least 'FRAMETIME_SIZE' frames to get an accurate
+// result. 
+// The first FRAMETIME_SIZE values can and will be incorrect.
+//
+// At worst, every frame may take 1 millisecond to render, then the delta is 
+// average over FRAMETIME_SIZE frames... delta will be (1 / FRAMETIME_SIZE)...
+#undef  TED_CURSUB
+#define TED_CURSUB "fps_tick"
+#define FRAMETIME_SIZE 512
+static float frametimes[FRAMETIME_SIZE];
+void fps_tick(float* delta, int* fps)
+{
+	static Uint32 timenow = 0;
+	static Uint32 timeold = 0;
+	static Uint32 frame   = 0;
+	float avgframetime    = 0.0f;
+	
+	timenow = SDL_GetTicks();
+	frametimes[frame % FRAMETIME_SIZE] = (float)(timenow - timeold);
+	frame++;
+	
+	for (unsigned int i = 0; i < FRAMETIME_SIZE; i++)
+	{
+		avgframetime += frametimes[i];
+	}
+	avgframetime /= FRAMETIME_SIZE;
+	
+	timeold = timenow;
+	*delta  = avgframetime / 1000.0f;
+	*fps    = (int) (1000.0f / avgframetime);
+}
+
 #include "../eng/object.h"
 #include "../eng/camera.h"
 #include "../eng/render.h"
@@ -32,8 +68,6 @@ void knot(void)
 {
 	int r = 1, mx, mx_old, my, my_old;
 	float rad = 0.0f, mousesensitivity = 0.01f;
-	float deltatime = 0.18f;
-	float totaltime = 0.0f;
 	
 	SDL_Event e;
 	g_world_start();
@@ -44,8 +78,12 @@ void knot(void)
 	SDL_GetMouseState(&mx_old, &my_old);
 	do
 	{
-		totaltime += deltatime / 10.0f;
+		// Timing
+		float delta;
+		int fps;
+		fps_tick(&delta, &fps);
 
+		// Events
 		SDL_PumpEvents();
 		const Uint8* keys = SDL_GetKeyboardState(0);
 		SDL_GetMouseState(&mx, &my);
@@ -67,25 +105,24 @@ void knot(void)
 			}
 		}
 		if (keys[SDL_SCANCODE_UP])
-			camera->Forward(1.0f * deltatime);
+			camera->Forward(16.0f * delta);
 		if (keys[SDL_SCANCODE_DOWN])
-			camera->Forward(-1.0f * deltatime);
+			camera->Forward(-16.0f * delta);
 		if (keys[SDL_SCANCODE_LEFT])
-			camera->Turn(-0.05f);
+			camera->Turn(-3.1415 * delta);
 		if (keys[SDL_SCANCODE_RIGHT])
-			camera->Turn(0.05f);
+			camera->Turn(3.1415 * delta);
 		camera->Turn((float)(mx - mx_old) * mousesensitivity);
 		camera->Recalculate();
 
 		// Tick
 		rad += 0.01f;
 
-		g_world_tick(camera);
+		g_world_tick(camera, delta, fps);
 		tau_gra_updatewindow();
-		SDL_Delay(10);
 
-		mx_old = mx;
-		my_old = my;
+		mx_old  = mx;
+		my_old  = my;
 	} while (r);
 
 	delete(camera);

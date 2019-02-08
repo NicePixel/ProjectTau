@@ -28,7 +28,7 @@ void g_world_start(void)
 	framebuffer      = tau_gra_framebuffer_make(800, 600);	
 }
 
-void g_world_tick(CTauCamera* camera)
+void g_world_tick(CTauCamera* camera, float delta, int fps)
 {
 	glm::mat4 text_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
 	glm::mat4 identity        = glm::mat4(1.0f);
@@ -62,7 +62,7 @@ void g_world_tick(CTauCamera* camera)
 	tau_gra_shader_setuniformInt1(&shader_text, "texture0", 0);
 	tau_gra_shader_setuniformMat4(&shader_text, "proj", glm::value_ptr(text_projection));
 	tau_gra_disableDepthTest();
-	tau_gra_font_rendertext(&font_default, "$ cat nyx > talk", 0, 16, 1.0f);
+	tau_gra_font_rendertext(&font_default, std::string("$ cat nyx > talk :: frames/second: ") + std::to_string(fps), 0, 16, 1.0f);
 	tau_gra_enableDepthTest();
 
 	// Render to screen
