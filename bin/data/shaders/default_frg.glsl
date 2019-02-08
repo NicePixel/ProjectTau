@@ -22,5 +22,7 @@ void main(void)
 		vec4 colortexture = texture(texture0, vec2(uv.x * uvscale, -uv.y * uvscale));
 		color.rgb = colortexture.rgb;
 	}
+	float fog_c = fragpos.z / 128.0;
+	color.rgb -= vec3(fog_c, fog_c, fog_c);
 	color.a = 1.0;
 }

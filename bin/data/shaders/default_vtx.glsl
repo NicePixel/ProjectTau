@@ -16,6 +16,6 @@ void main(void)
 	mat4 mvp    = proj * view * model;
 	gl_Position = mvp * vec4(coord3d, 1.0);
 	uv          = uv2d;
-	fragpos     = vec3(model * vec4(coord3d, 1.0));;
+	fragpos     = gl_Position.xyz;
 	normal      = normal3d;
 }

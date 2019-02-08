@@ -18,4 +18,6 @@ void main()
 	{
 		color = color_ground;
 	}
+	float fog_c = 1.0/abs(pow(position.y, 1.05));
+	color.rgb = vec3(color.r / fog_c, color.g / fog_c, color.b / fog_c);
 } 
