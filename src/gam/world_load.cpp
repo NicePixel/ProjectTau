@@ -40,8 +40,6 @@ VERTEX find_vertex(int id, std::vector<VERTEX>& vertices)
 	{
 		if (vertices.at(i).id == id)
 		{
-			TED_PRINT_INFO("Found vertex ");
-			TED_PRINT_INFO(std::to_string(i) + ", " + std::to_string(id));
 			return vertices.at(i);
 		}
 	}
