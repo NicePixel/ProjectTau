@@ -55,7 +55,7 @@ VERTEX find_vertex(int id, std::vector<VERTEX>& vertices)
 // First line has data {1, 2, 1}, ID is 1, V0_ID is 1, V1_ID is 2.
 #undef  TED_CURSUB
 #define TED_CURSUB "g_world_load"
-void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines)
+void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, ENTITY* entities, int* entity_len)
 {
 	TED_PRINT_INFO("Loading world...");
 	
@@ -146,5 +146,12 @@ void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines)
 		VERTEX v1     = find_vertex(l.v1_id, data_vertices);
 		glm::vec4 pos = glm::vec4(v0.x, v0.y, v1.x, v1.y);
 		collisionlines.push_back(pos);
+	}
+	
+	// Put entities in the array
+	*entity_len = data_entities.size();
+	for (i = 0; i < data_entities.size(); i++)
+	{
+		entities[i] = data_entities.at(i);
 	}
 }

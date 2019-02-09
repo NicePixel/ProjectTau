@@ -4,6 +4,7 @@
 #include "../eng/print.h"
 #include "world_load.h"
 #include "world.h"
+#include "entity.h"
 
 // Persistent data
 #define shader_default  shaders[0]
@@ -16,12 +17,37 @@ static FONT        font_default;
 static FRAMEBUFFER framebuffer;
 
 // Current world data
-static MESH mesh_walls;
+#define CAMERA_HEIGHT 8.0f
+static MESH   mesh_walls;
+static ENTITY entity[16];
+static int    entity_len;
 
-void g_world_start(void)
+#undef  TED_CURSUB
+#define TED_CURSUB "g_world_start"
+#include "entity_table.h"
+void g_world_start(CTauCamera** newcamera)
 {
 	std::vector<glm::vec4> collisions;
-	g_world_load("world0", collisions);
+	g_world_load("world0", collisions, entity, &entity_len);
+	
+	// The created camera should be where the player spawns.
+	// Find the player spawner.
+	for (int i = 0; i < entity_len; i++)
+	{
+		ENTITY e = entity[i];
+		switch(e.eid)
+		{
+			case EID_PLAYERSPAWN:
+				*newcamera = new CTauCamera((float) e.x, CAMERA_HEIGHT, (float)e.y);
+				(*newcamera)->Turn((float)(e.angle) * (-3.1415f / 180.0f));
+			default:
+				break;
+		}
+	}
+	if (!newcamera)
+	{
+		TED_PRINT_ERROR("There is no camera entity, \"EID=1\"!!!");
+	}
 	
 	// Load persistent data
 	mesh_walls       = tau_gra_mesh_make("data/models/world0.obj");
@@ -35,6 +61,8 @@ void g_world_start(void)
 	framebuffer      = tau_gra_framebuffer_make(800, 600);
 }
 
+#undef  TED_CURSUB
+#define TED_CURSUB "g_world_tick"
 void g_world_tick(CTauCamera* camera, float delta, int fps)
 {
 	glm::mat4 text_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);

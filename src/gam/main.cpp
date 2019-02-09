@@ -70,9 +70,13 @@ void knot(void)
 	float rad = 0.0f, mousesensitivity = 0.01f;
 	
 	SDL_Event e;
-	g_world_start();
-
-	CTauCamera* camera = new CTauCamera(0.0, 6.0, 0.0);
+	
+	CTauCamera* camera = nullptr;
+	g_world_start(&camera);
+	if (!camera)
+	{
+		TED_PRINT_ERROR("Camera is null...");
+	}
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	SDL_GetMouseState(&mx_old, &my_old);
