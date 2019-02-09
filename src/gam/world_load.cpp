@@ -24,14 +24,8 @@ typedef struct
 	int id;
 } TRI;
 
-typedef struct
-{
-	int x, y;
-	int id;
-	int eid;
-	int flags;
-	int angle;
-} ENTITY;
+// Entity structure type
+#include "entity.h"
 
 VERTEX find_vertex(int id, std::vector<VERTEX>& vertices)
 {
