@@ -1,5 +1,8 @@
+#include <glm/glm.hpp>
 #include "../eng/render.h"
 #include "../eng/camera.h"
+#include "../eng/print.h"
+#include "world_load.h"
 #include "world.h"
 
 // Persistent data
@@ -17,7 +20,11 @@ static MESH mesh_walls;
 
 void g_world_start(void)
 {
-	mesh_walls       = tau_gra_mesh_make("data/models/map0.obj");
+	std::vector<glm::vec4> collisions;
+	g_world_load("world0", collisions);
+	
+	// Load persistent data
+	mesh_walls       = tau_gra_mesh_make("data/models/world0.obj");
 	shader_default   = tau_gra_shader_make("data/shaders/default_vtx.glsl", "data/shaders/default_frg.glsl");
 	shader_text      = tau_gra_shader_make("data/shaders/font_vtx.glsl", "data/shaders/font_frg.glsl");
 	shader_screen    = tau_gra_shader_make("data/shaders/screen_vtx.glsl", "data/shaders/screen_frg.glsl");
@@ -25,7 +32,7 @@ void g_world_start(void)
 	font_default     = tau_gra_font_make("data/fonts/default.ttf", 32);
 	textures[0]      = tau_gra_texture_make("data/textures/checkerboard.png");
 	textures[1]      = tau_gra_texture_make("data/textures/wall0.png");
-	framebuffer      = tau_gra_framebuffer_make(800, 600);	
+	framebuffer      = tau_gra_framebuffer_make(800, 600);
 }
 
 void g_world_tick(CTauCamera* camera, float delta, int fps)
