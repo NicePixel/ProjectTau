@@ -21,13 +21,13 @@ static FRAMEBUFFER framebuffer;
 static MESH   mesh_walls;
 static ENTITY entity[16];
 static int    entity_len;
+static std::vector<glm::vec4> collisions;
 
 #undef  TED_CURSUB
 #define TED_CURSUB "g_world_start"
 #include "entity_table.h"
 void g_world_start(CTauCamera** newcamera)
 {
-	std::vector<glm::vec4> collisions;
 	g_world_load("world0", collisions, entity, &entity_len);
 	
 	// The created camera should be where the player spawns.
