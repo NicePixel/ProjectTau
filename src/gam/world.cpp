@@ -113,17 +113,6 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 		float wallangle     = atan2(wall_p1.y - wall_p0.y, wall_p1.x - wall_p0.x);
 		if (intersect(cam_p0, cam_p1, wall_p0, wall_p1))
 		{
-			//float wk = (wall_p1.y - wall_p0.y) / (wall_p1.x - wall_p0.x);
-			//if (abs(wall_p1.x - wall_p0.x) < 0.0001f)
-			//	wk = 0.0f;
-			//float wc = wall_p0.y - wk * wall_p0.x;
-			
-			//float pk = (cam_p1.y - cam_p0.y) / (cam_p1.x - cam_p0.x);
-			//float pc = cam_p1.y - pk * cam_p0.x;
-			
-			//float ix = (wc - pc) / (pk - wk);
-			//float iy = pk * ix + wc;
-			
 			float dx0 = cam_p0.x  - cam_p1.x;
 			float dy0 = cam_p0.y  - cam_p1.y;
 			float dx1 = wall_p0.x - wall_p1.x;
@@ -131,10 +120,6 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 			float m0  = sqrt(dx0*dx0 + dy0*dy0);
 			float m1  = sqrt(dx1*dx1 + dy1*dy1);
 			float angle = acos((dx0*dx1 + dy0*dy1) / (m0 * m1));
-			//float angle = atan2(iy-cam_p1.y, ix-cam_p1.x);
-			
-			//vecmove.x = cos(-angle) * vecmove.x*5;
-			//vecmove.y = sin(-angle) * vecmove.y*5;
 #define sgn(x) (x >= 0.0f ? 1.0f : -1.0)
 			vecmove.x = sgn(angle) * vecmove.x * abs(cos(wallangle));
 			vecmove.y = sgn(angle) * vecmove.y * abs(sin(wallangle));
