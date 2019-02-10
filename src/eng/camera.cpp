@@ -13,7 +13,6 @@ CTauCamera::CTauCamera(float x, float y, float z):
 	m_projection = glm::perspective(3.1415f / 2.0f, 800.0f / 600.0f, 0.2f, 10000.0f);
 	m_angle      = 0.0f;
 	m_right      = glm::vec3(1.0, 0.0, 0.0);
-	Recalculate();
 }
 
 CTauCamera::~CTauCamera(void)

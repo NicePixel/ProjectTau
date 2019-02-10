@@ -43,6 +43,7 @@ void g_world_start(CTauCamera** newcamera)
 			case EID_PLAYERSPAWN:
 				*newcamera = new CTauCamera((float) e.x, CAMERA_HEIGHT, (float)e.y);
 				(*newcamera)->Turn((float)(e.angle) * (-3.1415f / 180.0f));
+				(*newcamera)->Recalculate();
 			default:
 				break;
 		}
