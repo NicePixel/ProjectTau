@@ -23,12 +23,14 @@ static MESH   mesh_walls;
 static ENTITY entity[16];
 static int    entity_len;
 static std::vector<glm::vec4> collisions;
+static float totaltime;
 
 #undef  TED_CURSUB
 #define TED_CURSUB "g_world_start"
 #include "entity_table.h"
 void g_world_start(CTauCamera** newcamera)
 {
+	totaltime = 0.0f;
 	g_world_load("world0", collisions, entity, &entity_len);
 	
 	// The created camera should be where the player spawns.
@@ -75,6 +77,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 {
 	glm::mat4 text_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
 	glm::mat4 identity        = glm::mat4(1.0f);
+	totaltime += delta;
 	
 	// Move
 	glm::vec2 vecmove = glm::vec2(0.0f, 0.0f);
@@ -156,9 +159,10 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	// Text
 	tau_gra_shader_use(&shader_text);
 	tau_gra_shader_setuniformInt1(&shader_text, "texture0", 0);
+	tau_gra_shader_setuniformFlt1(&shader_text, "totaltime", totaltime);
 	tau_gra_shader_setuniformMat4(&shader_text, "proj", glm::value_ptr(text_projection));
 	tau_gra_disableDepthTest();
-	tau_gra_font_rendertext(&font_default, std::string("$ cat nyx > talk :: frames/second: ") + std::to_string(fps), 0, 16, 1.0f);
+	tau_gra_font_rendertext(&font_default, std::string("[") + std::to_string(fps) + std::string("]"), 0, 2, 1.0f);
 	tau_gra_enableDepthTest();
 
 	// Render to screen

@@ -97,6 +97,12 @@ SHADER tau_gra_shader_make(const char* fileVertex, const char* fileFragment)
 		setuniform(&uniform.second, prg, uniform.first.c_str());
 		sha.m_uniforms.insert(uniform);
 	}
+	{
+		std::pair<std::string, GLint> uniform;
+		uniform.first = "totaltime";
+		setuniform(&uniform.second, prg, uniform.first.c_str());
+		sha.m_uniforms.insert(uniform);
+	}
 
 	// Delete unused
 	glDetachShader(prg, vtx);
