@@ -67,7 +67,6 @@ void fps_tick(float* delta, int* fps)
 void knot(void)
 {
 	int r = 1, mx, mx_old, my, my_old;
-	float rad = 0.0f, mousesensitivity = 0.01f;
 	
 	SDL_Event e;
 	
@@ -108,21 +107,8 @@ void knot(void)
 				tau_gra_videomode(TAU_VIDEOMODE_FULLSCREEN);
 			}
 		}
-		if (keys[SDL_SCANCODE_UP])
-			camera->Forward(16.0f * delta);
-		if (keys[SDL_SCANCODE_DOWN])
-			camera->Forward(-16.0f * delta);
-		if (keys[SDL_SCANCODE_LEFT])
-			camera->Turn(-3.1415 * delta);
-		if (keys[SDL_SCANCODE_RIGHT])
-			camera->Turn(3.1415 * delta);
-		camera->Turn((float)(mx - mx_old) * mousesensitivity);
-		camera->Recalculate();
 
-		// Tick
-		rad += 0.01f;
-
-		g_world_tick(camera, delta, fps);
+		g_world_tick(camera, delta, fps, keys, mx - mx_old);
 		tau_gra_updatewindow();
 
 		mx_old  = mx;

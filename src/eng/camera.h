@@ -21,8 +21,10 @@ public:
 	
 	inline void ResetPosition(void)             { m_position = m_initialPosition; };
 
-	const float* GetValueProjection(void) const { return glm::value_ptr(m_projection); }
-	const float* GetValueView(void)       const { return glm::value_ptr(m_view);       }
+	glm::vec2       GetForwardVector(float forward_step);
+	const float*    GetValueProjection(void) const { return glm::value_ptr(m_projection); }
+	const float*    GetValueView(void)       const { return glm::value_ptr(m_view);       }
+	const glm::vec3 GetPosition(void)        const { return m_position;                   }
 
 private:
 	const glm::vec3 m_initialPosition;

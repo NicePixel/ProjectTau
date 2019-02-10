@@ -1,4 +1,5 @@
 #include <glm/glm.hpp>
+#include <SDL2/SDL.h>
 #include "../eng/render.h"
 #include "../eng/camera.h"
 #include "../eng/print.h"
@@ -57,16 +58,76 @@ void g_world_start(CTauCamera** newcamera)
 	shader_backdrop  = tau_gra_shader_make("data/shaders/backdrop_vtx.glsl", "data/shaders/backdrop_frg.glsl");
 	font_default     = tau_gra_font_make("data/fonts/default.ttf", 32);
 	textures[0]      = tau_gra_texture_make("data/textures/checkerboard.png");
-	textures[1]      = tau_gra_texture_make("data/textures/wall0.png");
+	textures[1]      = tau_gra_texture_make("data/textures/becareful.png");
 	framebuffer      = tau_gra_framebuffer_make(800, 600);
+}
+
+static bool intersect(glm::vec2 p1, glm::vec2 p2, glm::vec2 q1, glm::vec2 q2)
+{
+    return (((q1.x-p1.x)*(p2.y-p1.y) - (q1.y-p1.y)*(p2.x-p1.x)) * ((q2.x-p1.x)*(p2.y-p1.y) - (q2.y-p1.y)*(p2.x-p1.x)) < 0) &&
+           (((p1.x-q1.x)*(q2.y-q1.y) - (p1.y-q1.y)*(q2.x-q1.x)) * ((p2.x-q1.x)*(q2.y-q1.y) - (p2.y-q1.y)*(q2.x-q1.x)) < 0);
 }
 
 #undef  TED_CURSUB
 #define TED_CURSUB "g_world_tick"
-void g_world_tick(CTauCamera* camera, float delta, int fps)
+#define RADIUS_COLLISION 128.0f
+void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, int mousedeltax)
 {
 	glm::mat4 text_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
 	glm::mat4 identity        = glm::mat4(1.0f);
+	
+	// Move
+	glm::vec2 vecmove = glm::vec2(0.0f, 0.0f);
+	if (keys[SDL_SCANCODE_UP])
+		vecmove = camera->GetForwardVector(+16.0f * delta);
+	if (keys[SDL_SCANCODE_DOWN])
+		vecmove = camera->GetForwardVector(-16.0f * delta);
+	if (keys[SDL_SCANCODE_LEFT])
+		camera->Turn(-3.1415 * delta);
+	if (keys[SDL_SCANCODE_RIGHT])
+		camera->Turn(3.1415 * delta);
+	for (unsigned int i = 0; i < collisions.size(); i++)
+	{
+		glm::vec4 wall      = collisions.at(i);
+		glm::vec3 camerapos = camera->GetPosition();
+		glm::vec2 cam_p0    = glm::vec2(camerapos.x, camerapos.z);
+		glm::vec2 cam_p1    = glm::vec2(camerapos.x + vecmove.x * RADIUS_COLLISION, camerapos.z + vecmove.y * RADIUS_COLLISION);
+		glm::vec2 wall_p0   = glm::vec2(wall.x, wall.y);
+		glm::vec2 wall_p1   = glm::vec2(wall.z, wall.w);
+		float wallangle     = atan2(wall_p1.y - wall_p0.y, wall_p1.x - wall_p0.x);
+		if (intersect(cam_p0, cam_p1, wall_p0, wall_p1))
+		{
+			//float wk = (wall_p1.y - wall_p0.y) / (wall_p1.x - wall_p0.x);
+			//if (abs(wall_p1.x - wall_p0.x) < 0.0001f)
+			//	wk = 0.0f;
+			//float wc = wall_p0.y - wk * wall_p0.x;
+			
+			//float pk = (cam_p1.y - cam_p0.y) / (cam_p1.x - cam_p0.x);
+			//float pc = cam_p1.y - pk * cam_p0.x;
+			
+			//float ix = (wc - pc) / (pk - wk);
+			//float iy = pk * ix + wc;
+			
+			float dx0 = cam_p0.x  - cam_p1.x;
+			float dy0 = cam_p0.y  - cam_p1.y;
+			float dx1 = wall_p0.x - wall_p1.x;
+			float dy1 = wall_p0.y - wall_p1.y;
+			float m0  = sqrt(dx0*dx0 + dy0*dy0);
+			float m1  = sqrt(dx1*dx1 + dy1*dy1);
+			float angle = acos((dx0*dx1 + dy0*dy1) / (m0 * m1));
+			//float angle = atan2(iy-cam_p1.y, ix-cam_p1.x);
+			
+			//vecmove.x = cos(-angle) * vecmove.x*5;
+			//vecmove.y = sin(-angle) * vecmove.y*5;
+#define sgn(x) (x >= 0.0f ? 1.0f : -1.0)
+			vecmove.x = sgn(angle) * vecmove.x * abs(cos(wallangle));
+			vecmove.y = sgn(angle) * vecmove.y * abs(sin(wallangle));
+#undef sgn
+		}
+	}
+	camera->Move(vecmove.x, 0.0f, vecmove.y);
+	camera->Turn((float)(mousedeltax) * 0.01f);
+	camera->Recalculate();
 	
 	// Draw (to the framebuffer)
 	tau_gra_framebuffer_use(&framebuffer);

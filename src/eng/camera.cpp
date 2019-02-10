@@ -76,3 +76,12 @@ void CTauCamera::Turn(float amount)
 {
 	m_angle += amount;
 }
+
+glm::vec2 CTauCamera::GetForwardVector(float forward_step)
+{
+	glm::vec3 other_pos = m_position;
+	other_pos.x += cos(m_angle) * forward_step;
+	other_pos.z += sin(m_angle) * forward_step;
+	glm::vec2 res = glm::vec2(other_pos.x - m_position.x, other_pos.z - m_position.z);
+	return res;
+}
