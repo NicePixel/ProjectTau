@@ -80,15 +80,28 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	totaltime += delta;
 	
 	// Move
+	bool recalculate = false;
 	glm::vec2 vecmove = glm::vec2(0.0f, 0.0f);
 	if (keys[SDL_SCANCODE_UP])
-		vecmove = camera->GetForwardVector(+16.0f * delta);
+	{
+		vecmove     = camera->GetForwardVector(+16.0f * delta);
+		recalculate = true;
+	}
 	if (keys[SDL_SCANCODE_DOWN])
-		vecmove = camera->GetForwardVector(-16.0f * delta);
+	{
+		vecmove     = camera->GetForwardVector(-16.0f * delta);
+		recalculate = true;
+	}
 	if (keys[SDL_SCANCODE_LEFT])
+	{
 		camera->Turn(-3.1415 * delta);
+		recalculate = true;
+	}
 	if (keys[SDL_SCANCODE_RIGHT])
+	{
 		camera->Turn(3.1415 * delta);
+		recalculate = true;
+	}
 	for (unsigned int i = 0; i < collisions.size(); i++)
 	{
 		glm::vec4 wall      = collisions.at(i);
@@ -128,9 +141,12 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 #undef sgn
 		}
 	}
-	camera->Move(vecmove.x, 0.0f, vecmove.y);
-	camera->Turn((float)(mousedeltax) * 0.01f);
-	camera->Recalculate();
+	if (recalculate)
+	{
+		camera->Move(vecmove.x, 0.0f, vecmove.y);
+		camera->Turn((float)(mousedeltax) * 0.01f);
+		camera->Recalculate();
+	}
 	
 	// Draw (to the framebuffer)
 	tau_gra_framebuffer_use(&framebuffer);
