@@ -8,12 +8,8 @@
 #include "entity.h"
 
 // Persistent data
-#define shader_default  shaders[0]
-#define shader_text     shaders[1]
-#define shader_screen   shaders[2]
-#define shader_backdrop shaders[3]
-static SHADER      shaders[4];
-static TEXTURE     textures[2];
+static SHADER      shaders[5];
+static TEXTURE     textures[3];
 static FONT        font_default;
 static FRAMEBUFFER framebuffer;
 
@@ -24,6 +20,39 @@ static ENTITY entity[16];
 static int    entity_len;
 static std::vector<glm::vec4> collisions;
 static float totaltime;
+
+SHADER g_world_getshader(unsigned int index)
+{
+	return shaders[index];
+}
+
+TEXTURE g_world_gettexture(unsigned int index)
+{
+	return textures[index];
+}
+
+FONT g_world_getfont(void)
+{
+	return font_default;
+}
+
+#undef  TED_CURSUB
+#define TED_CURSUB "g_world_start_persistent"
+void g_world_start_persistent(void)
+{
+	// Load persistent data
+	mesh_walls       = tau_gra_mesh_make("data/models/world0.obj");
+	shader_default   = tau_gra_shader_make("data/shaders/default_vtx.glsl", "data/shaders/default_frg.glsl");
+	shader_text      = tau_gra_shader_make("data/shaders/font_vtx.glsl", "data/shaders/font_frg.glsl");
+	shader_screen    = tau_gra_shader_make("data/shaders/screen_vtx.glsl", "data/shaders/screen_frg.glsl");
+	shader_backdrop  = tau_gra_shader_make("data/shaders/backdrop_vtx.glsl", "data/shaders/backdrop_frg.glsl");
+	shader_loading   = tau_gra_shader_make("data/shaders/loading_vtx.glsl", "data/shaders/loading_frg.glsl");
+	font_default     = tau_gra_font_make("data/fonts/default.ttf", 32);
+	textures[0]      = tau_gra_texture_make("data/textures/checkerboard.png");
+	textures[1]      = tau_gra_texture_make("data/textures/becareful.png");
+	textures[2]      = tau_gra_texture_make("data/textures/warn.png");
+	framebuffer      = tau_gra_framebuffer_make(800, 600);
+}
 
 #undef  TED_CURSUB
 #define TED_CURSUB "g_world_start"
@@ -52,17 +81,6 @@ void g_world_start(CTauCamera** newcamera)
 	{
 		TED_PRINT_ERROR("There is no camera entity, \"EID=1\"!!!");
 	}
-	
-	// Load persistent data
-	mesh_walls       = tau_gra_mesh_make("data/models/world0.obj");
-	shader_default   = tau_gra_shader_make("data/shaders/default_vtx.glsl", "data/shaders/default_frg.glsl");
-	shader_text      = tau_gra_shader_make("data/shaders/font_vtx.glsl", "data/shaders/font_frg.glsl");
-	shader_screen    = tau_gra_shader_make("data/shaders/screen_vtx.glsl", "data/shaders/screen_frg.glsl");
-	shader_backdrop  = tau_gra_shader_make("data/shaders/backdrop_vtx.glsl", "data/shaders/backdrop_frg.glsl");
-	font_default     = tau_gra_font_make("data/fonts/default.ttf", 32);
-	textures[0]      = tau_gra_texture_make("data/textures/checkerboard.png");
-	textures[1]      = tau_gra_texture_make("data/textures/becareful.png");
-	framebuffer      = tau_gra_framebuffer_make(800, 600);
 }
 
 static bool intersect(glm::vec2 p1, glm::vec2 p2, glm::vec2 q1, glm::vec2 q2)

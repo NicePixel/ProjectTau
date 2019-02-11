@@ -72,6 +72,44 @@ void knot(void)
 	SDL_Event e;
 	
 	CTauCamera* camera = nullptr;
+	
+	// Begin the world...
+	g_world_start_persistent();
+	{
+		SHADER  sha     = g_world_getshader (shader_loading_index);
+		SHADER  shatext = g_world_getshader (shader_text_index);
+		TEXTURE tex     = g_world_gettexture(texture_exclamation);
+		FONT    font    = g_world_getfont   ();
+		std::string loadingtrack  = "";
+		glm::mat4 text_projection = glm::ortho(0.0f, 1200.0f, 0.0f, 600.0f);
+		
+		// This is a concept, remove later!
+		tau_gra_disableDepthTest();
+		for (int i=0; i < 100; i++)
+		{
+			loadingtrack += ">";
+			if (loadingtrack.size() > 1)
+				loadingtrack[loadingtrack.size() - 2] = '-';
+			
+			// Icon
+			tau_gra_clear(TAU_CLEAR_COLORANDDEPTHBUFFER);
+			tau_gra_shader_use(&sha);
+			tau_gra_shader_setuniformInt1(&sha, "texture0", 0);
+			tau_gra_texture_use(&tex, TAU_TEXTUREUNIT_0);
+			tau_gra_ren_mesh_unitsquare();
+			
+			// loadtrak
+			tau_gra_shader_use(&shatext);
+			tau_gra_shader_setuniformInt1(&shatext, "texture0", 0);
+			tau_gra_shader_setuniformFlt1(&shatext, "totaltime", 0.0f);
+			tau_gra_shader_setuniformMat4(&shatext, "proj", glm::value_ptr(text_projection));
+			tau_gra_font_rendertext(&font, loadingtrack, 0, 2, 1.0f);
+			tau_gra_updatewindow();
+			SDL_Delay(10);
+		}
+		SDL_Delay(500);
+		tau_gra_enableDepthTest();
+	}
 	g_world_start(&camera);
 	if (!camera)
 	{
