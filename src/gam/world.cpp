@@ -74,7 +74,7 @@ static bool intersect(glm::vec2 p1, glm::vec2 p2, glm::vec2 q1, glm::vec2 q2)
 #undef  TED_CURSUB
 #define TED_CURSUB "g_world_tick"
 #define RADIUS_COLLISION 128.0f
-void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, int mousedeltax)
+void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, int mousedeltax, uint32_t frame)
 {
 	glm::mat4 text_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
 	glm::mat4 identity        = glm::mat4(1.0f);

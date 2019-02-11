@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include "SDL2/SDL.h"
 #include "../eng/entry.h"
 #include "../eng/print.h"
@@ -36,7 +37,7 @@ int main(int argc, char* argv[])
 #define TED_CURSUB "fps_tick"
 #define FRAMETIME_SIZE 512
 static float frametimes[FRAMETIME_SIZE];
-static Uint32 frame = 0;
+static uint32_t frame = 0;
 void fps_tick(float* delta, int* fps)
 {
 	static Uint32 timenow = 0;
@@ -108,7 +109,7 @@ void knot(void)
 			}
 		}
 
-		g_world_tick(camera, delta, fps, keys, mx - mx_old);
+		g_world_tick(camera, delta, fps, keys, mx - mx_old, frame);
 		tau_gra_updatewindow();
 
 		mx_old  = mx;
