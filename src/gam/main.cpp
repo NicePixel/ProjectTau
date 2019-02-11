@@ -36,11 +36,11 @@ int main(int argc, char* argv[])
 #define TED_CURSUB "fps_tick"
 #define FRAMETIME_SIZE 512
 static float frametimes[FRAMETIME_SIZE];
+static Uint32 frame = 0;
 void fps_tick(float* delta, int* fps)
 {
 	static Uint32 timenow = 0;
 	static Uint32 timeold = 0;
-	static Uint32 frame   = 0;
 	float avgframetime    = 0.0f;
 	
 	timenow = SDL_GetTicks();
