@@ -5,8 +5,8 @@ OBJ_DIR=./obj/
 OBJ_DIRMAKE=obj
 OBJECT_FILES=$(OBJ_DIR)eng_camera.o $(OBJ_DIR)eng_entry.o $(OBJ_DIR)eng_io.o $(OBJ_DIR)eng_object.o $(OBJ_DIR)eng_print.o $(OBJ_DIR)eng_render.o $(OBJ_DIR)eng_timer.o $(OBJ_DIR)eng_ogl_exception.o $(OBJ_DIR)eng_ogl_font.o $(OBJ_DIR)eng_ogl_framebuffer.o $(OBJ_DIR)eng_ogl_main.o $(OBJ_DIR)eng_ogl_mesh.o $(OBJ_DIR)eng_ogl_render.o $(OBJ_DIR)eng_ogl_shader.o $(OBJ_DIR)eng_ogl_texture.o $(OBJ_DIR)gam_main.o $(OBJ_DIR)gam_world.o $(OBJ_DIR)gam_world_load.o
 
-LIB_WINDOWS=-L./lib/ -lmingw32 -lSDL2 -lSDL2_image -lopengl32 -lglew32 -lfreetype
-LIB=-lSDL2 -lSDL2_image -lopengl32 -lglew32 -lfreetype
+LIB_WINDOWS=-L./lib/ -lmingw32 -lSDL2 -lSDL2_image -lopengl32 -lglew32 -lfreetype -lOpenAL32
+LIB=-lSDL2 -lSDL2_image -lopengl32 -lglew32 -lfreetype -lopenal
 INCLUDE=-I./ -I./include/
 
 LFLAGS=
