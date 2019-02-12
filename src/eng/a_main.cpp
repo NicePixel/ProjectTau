@@ -64,3 +64,8 @@ void tau_aud_test(int run)
 	
 	Mix_PlayChannel(2, test_chunk, 0);
 }
+
+void tau_aud_vol(int vol)
+{
+	Mix_Volume(2, vol);
+}
