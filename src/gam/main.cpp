@@ -5,6 +5,7 @@
 #include "../eng/object.h"
 #include "../eng/camera.h"
 #include "../eng/render.h"
+#include "../eng/a_main.h"
 #include "world.h"
 
 // SDL already defines main() function which initializes.
@@ -110,6 +111,43 @@ void begin_world(CTauCamera** camera)
 	{
 		TED_PRINT_ERROR("Camera is null...");
 	}
+	float time = 0.0f;
+	SDL_Event e;
+	for(;;)
+	{
+		time += 0.008f;
+		SDL_PumpEvents();
+		while (SDL_PollEvent(&e))
+			if (e.type == SDL_KEYDOWN)
+				goto L_END;
+			// Disable depth testing throughout the loading screen, as it is
+	// not needed. This is more of a 2D loading screen.
+	// Depth testing is enabled afterwards.
+	tau_gra_disableDepthTest();
+
+	// Icon
+	tau_gra_framebuffer_use(nullptr);
+	tau_gra_clear(TAU_CLEAR_COLORANDDEPTHBUFFER);
+	tau_gra_shader_use(&sha);
+	tau_gra_shader_setuniformInt1(&sha, "texture0", 0);
+	tau_gra_texture_use(&tex, TAU_TEXTUREUNIT_0);
+	tau_gra_ren_mesh_unitsquare();
+
+	// Text
+	tau_gra_shader_use(&shatext);
+	tau_gra_shader_setuniformInt1(&shatext, "texture0", 0);
+	tau_gra_shader_setuniformFlt1(&shatext, "totaltime", time);
+	tau_gra_shader_setuniformMat4(&shatext, "proj", glm::value_ptr(text_projection));
+	tau_gra_font_rendertext(&font, "Persistent data put into memory.",   0, 2+32, 1.75f);
+	tau_gra_shader_setuniformFlt1(&shatext, "totaltime", time+0.33f);
+	tau_gra_font_rendertext(&font, "Starting world in a few seconds...", 0, 2,    1.75f);
+
+	// Show the scene, re-enable the depth testing.
+	tau_gra_updatewindow();
+	tau_gra_enableDepthTest();
+	}
+L_END:
+	tau_aud_test(1);
 }
 
 #undef  TED_CURSUB

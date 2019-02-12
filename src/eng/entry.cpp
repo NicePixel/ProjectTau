@@ -3,6 +3,7 @@
 #include "r_font.h"
 #include "r_exception.h"
 #include "r_main.h"
+#include "a_main.h"
 
 #undef  TED_CURSUB
 #define TED_CURSUB "tau_init"
@@ -14,6 +15,7 @@ void tau_init(const char* programName)
 	try
 	{
 		tau_gra_init(programName);
+		tau_aud_init();
 	}
 	catch (CTauGraException e)
 	{
@@ -34,7 +36,6 @@ void tau_init(const char* programName)
 		TED_PRINT_ERROR("We're done here, unfortunately.");
 		return;
 	}
-
 	TED_PRINT_INFO("Initialization seems successful.");
 }
 
@@ -43,6 +44,7 @@ void tau_init(const char* programName)
 void tau_quit(void)
 {
 	TED_PRINT_INFO("semi-STUB");
+	tau_aud_quit();
 	tau_gra_font_quit();
 	tau_gra_mesh_quit();
 }

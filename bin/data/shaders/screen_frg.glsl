@@ -9,7 +9,7 @@ uniform sampler2D texture1;
 out vec4 color;
 
 const float offset = 1.0 / 600.0;  
-const float gamma  = 1.5;
+const float gamma  = 1.0;
 
 vec3 postprocessing(void)
 {
