@@ -117,9 +117,9 @@ void begin_world(CTauCamera** camera)
 void knot(void)
 {
 	int r = 1, mx, mx_old, my, my_old;
-	
 	SDL_Event e;
 	
+	// Very important entities!
 	CTauCamera* camera = nullptr;
 	
 	// Begin the world...
@@ -142,7 +142,9 @@ void knot(void)
 		while (SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_QUIT)
+			{
 				r = 0;
+			}
 		}
 		if (keys[SDL_SCANCODE_F2])
 		{
