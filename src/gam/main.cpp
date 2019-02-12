@@ -2,6 +2,10 @@
 #include "SDL2/SDL.h"
 #include "../eng/entry.h"
 #include "../eng/print.h"
+#include "../eng/object.h"
+#include "../eng/camera.h"
+#include "../eng/render.h"
+#include "world.h"
 
 // SDL already defines main() function which initializes.
 // Since we're defining our own main(), we tell SDL that we'll take care of it.
@@ -59,10 +63,55 @@ void fps_tick(float* delta, int* fps)
 	*fps    = (int) (1000.0f / avgframetime);
 }
 
-#include "../eng/object.h"
-#include "../eng/camera.h"
-#include "../eng/render.h"
-#include "world.h"
+// After the persistent data has been loaded, a world can be start.
+// This shows a message that the persistent data is loaded and the world is
+// about to begin.
+#undef  TED_CURSUB
+#define TED_CURSUB "begin_world"
+void begin_world(CTauCamera** camera)
+{
+	SHADER  sha     = g_world_getshader (shader_loading_index);
+	SHADER  shatext = g_world_getshader (shader_text_index);
+	TEXTURE tex     = g_world_gettexture(texture_exclamation);
+	FONT    font    = g_world_getfont   ();
+	glm::mat4 text_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
+
+	// Disable depth testing throughout the loading screen, as it is
+	// not needed. This is more of a 2D loading screen.
+	// Depth testing is enabled afterwards.
+	tau_gra_disableDepthTest();
+
+	// Icon
+	tau_gra_framebuffer_use(nullptr);
+	tau_gra_clear(TAU_CLEAR_COLORANDDEPTHBUFFER);
+	tau_gra_shader_use(&sha);
+	tau_gra_shader_setuniformInt1(&sha, "texture0", 0);
+	tau_gra_texture_use(&tex, TAU_TEXTUREUNIT_0);
+	tau_gra_ren_mesh_unitsquare();
+
+	// Text
+	tau_gra_shader_use(&shatext);
+	tau_gra_shader_setuniformInt1(&shatext, "texture0", 0);
+	tau_gra_shader_setuniformFlt1(&shatext, "totaltime", 0.0f);
+	tau_gra_shader_setuniformInt1(&shatext, "rainbow", 0);
+	tau_gra_shader_setuniformMat4(&shatext, "proj", glm::value_ptr(text_projection));
+	tau_gra_font_rendertext(&font, "Persistent data put into memory.",   0, 2+32, 1.75f);
+	tau_gra_font_rendertext(&font, "Starting world in a few seconds...", 0, 2,    1.75f);
+
+	// Show the scene, re-enable the depth testing.
+	tau_gra_updatewindow();
+	tau_gra_enableDepthTest();
+
+	// Start the world,
+	// We should check to see if the important entities exist in the
+	// world. If they do not, we tell what's happened.
+	g_world_start(camera);
+	if (!(*camera))
+	{
+		TED_PRINT_ERROR("Camera is null...");
+	}
+}
+
 #undef  TED_CURSUB
 #define TED_CURSUB "knot"
 void knot(void)
@@ -75,40 +124,7 @@ void knot(void)
 	
 	// Begin the world...
 	g_world_start_persistent();
-	{
-		SHADER  sha     = g_world_getshader (shader_loading_index);
-		SHADER  shatext = g_world_getshader (shader_text_index);
-		TEXTURE tex     = g_world_gettexture(texture_exclamation);
-		FONT    font    = g_world_getfont   ();
-		glm::mat4 text_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-		
-		// This is a concept, remove later!
-		tau_gra_disableDepthTest();
-			
-		// Icon
-		tau_gra_clear(TAU_CLEAR_COLORANDDEPTHBUFFER);
-		tau_gra_shader_use(&sha);
-		tau_gra_shader_setuniformInt1(&sha, "texture0", 0);
-		tau_gra_texture_use(&tex, TAU_TEXTUREUNIT_0);
-		tau_gra_ren_mesh_unitsquare();
-		
-		// loadtrak
-		tau_gra_shader_use(&shatext);
-		tau_gra_shader_setuniformInt1(&shatext, "texture0", 0);
-		tau_gra_shader_setuniformFlt1(&shatext, "totaltime", 0.0f);
-		tau_gra_shader_setuniformInt1(&shatext, "rainbow", 0);
-		tau_gra_shader_setuniformMat4(&shatext, "proj", glm::value_ptr(text_projection));
-		tau_gra_font_rendertext(&font, "Persistent data put into memory.",   0, 2+32, 1.75f);
-		tau_gra_font_rendertext(&font, "Starting world in a few seconds...", 0, 2,    1.75f);
-		tau_gra_updatewindow();
-		
-		g_world_start(&camera);
-		if (!camera)
-		{
-			TED_PRINT_ERROR("Camera is null...");
-		}
-		tau_gra_enableDepthTest();
-	}
+	begin_world(&camera);
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	SDL_GetMouseState(&mx_old, &my_old);
