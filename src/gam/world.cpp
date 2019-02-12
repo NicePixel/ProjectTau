@@ -89,68 +89,95 @@ static bool intersect(glm::vec2 p1, glm::vec2 p2, glm::vec2 q1, glm::vec2 q2)
            (((p1.x-q1.x)*(q2.y-q1.y) - (p1.y-q1.y)*(q2.x-q1.x)) * ((p2.x-q1.x)*(q2.y-q1.y) - (p2.y-q1.y)*(q2.x-q1.x)) < 0);
 }
 
+// Handle player movement
+// Recalculate camera's matrices only if its state changes (moving, rotating...)
+#define RADIUS_COLLISION 128.0f
+#define sgn(x) (x >= 0.0f ? 1.0f : -1.0)
+void movement(CTauCamera** camera, float delta, const Uint8* keys, int mousedeltax)
+{
+	const float movementSpeed = 16.0f   * delta;
+	const float lookSpeed     = 3.1415f * delta;
+	bool  recalculate         = false;
+	glm::vec2 vecmove         = glm::vec2(0.0f, 0.0f);
+	
+	// Handle key presses
+	if (keys[SDL_SCANCODE_UP])
+	{
+		vecmove     = (*camera)->GetForwardVector(+movementSpeed);
+		recalculate = true;
+	}
+	else if (keys[SDL_SCANCODE_DOWN])
+	{
+		vecmove     = (*camera)->GetForwardVector(-movementSpeed);
+		recalculate = true;
+	}
+	if (keys[SDL_SCANCODE_LEFT])
+	{
+		(*camera)->Turn(-lookSpeed);
+		recalculate = true;
+	}
+	else if (keys[SDL_SCANCODE_RIGHT])
+	{
+		(*camera)->Turn(+lookSpeed);
+		recalculate = true;
+	}
+	
+	// Handle mouse
+	if ((float)(mousedeltax) > 0.0f || (float)(mousedeltax) < 0.0f)
+	{
+		(*camera)->Turn((float)(mousedeltax) * 0.01f);
+		recalculate = true;
+	}
+	
+	// For every wall's line,
+	// * calculate the line's relative angle to the coordinate system.
+	//   `wallangle`
+	// * find the length (magnitude) of the player's current position and the
+	// new, wanted position (forward vector). `m0` `m1`
+	// * If the line the player's move vector and wall's vector intersect,
+	// find the angle of the intersection. (the inner angle) `angle`
+	// * Intersection will make the player move alongside the wall, the side of 
+	// moving depends on the inner angle of the intersection.
+	glm::vec3 camerapos = (*camera)->GetPosition();
+	glm::vec2 cam_p0    = glm::vec2(camerapos.x, camerapos.z);
+	glm::vec2 cam_p1    = glm::vec2(camerapos.x + vecmove.x * RADIUS_COLLISION, camerapos.z + vecmove.y * RADIUS_COLLISION);
+	for (unsigned int i = 0; i < collisions.size(); i++)
+	{
+		glm::vec4 wall    = collisions.at(i);
+		glm::vec2 wall_p0 = glm::vec2(wall.x, wall.y);
+		glm::vec2 wall_p1 = glm::vec2(wall.z, wall.w);
+		float wallangle   = atan2(wall_p1.y - wall_p0.y, wall_p1.x - wall_p0.x);
+		if (intersect(cam_p0, cam_p1, wall_p0, wall_p1))
+		{
+			float dx0   = cam_p0.x  - cam_p1.x;
+			float dy0   = cam_p0.y  - cam_p1.y;
+			float dx1   = wall_p0.x - wall_p1.x;
+			float dy1   = wall_p0.y - wall_p1.y;
+			float m0    = sqrt(dx0*dx0 + dy0*dy0);
+			float m1    = sqrt(dx1*dx1 + dy1*dy1);
+			float angle = acos((dx0*dx1 + dy0*dy1) / (m0 * m1));
+			vecmove.x   = sgn(angle) * vecmove.x * abs(cos(wallangle));
+			vecmove.y   = sgn(angle) * vecmove.y * abs(sin(wallangle));
+		}
+	}
+	
+	if (recalculate)
+	{
+		(*camera)->Move(vecmove.x, 0.0f, vecmove.y);
+		(*camera)->Recalculate();
+	}
+}
+#undef sgn
+
 #undef  TED_CURSUB
 #define TED_CURSUB "g_world_tick"
-#define RADIUS_COLLISION 128.0f
 void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, int mousedeltax, uint32_t frame)
 {
 	glm::mat4 text_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
 	glm::mat4 identity        = glm::mat4(1.0f);
 	totaltime += delta;
 	
-	// Move
-	bool recalculate = false;
-	glm::vec2 vecmove = glm::vec2(0.0f, 0.0f);
-	if (keys[SDL_SCANCODE_UP])
-	{
-		vecmove     = camera->GetForwardVector(+16.0f * delta);
-		recalculate = true;
-	}
-	if (keys[SDL_SCANCODE_DOWN])
-	{
-		vecmove     = camera->GetForwardVector(-16.0f * delta);
-		recalculate = true;
-	}
-	if (keys[SDL_SCANCODE_LEFT])
-	{
-		camera->Turn(-3.1415 * delta);
-		recalculate = true;
-	}
-	if (keys[SDL_SCANCODE_RIGHT])
-	{
-		camera->Turn(3.1415 * delta);
-		recalculate = true;
-	}
-	for (unsigned int i = 0; i < collisions.size(); i++)
-	{
-		glm::vec4 wall      = collisions.at(i);
-		glm::vec3 camerapos = camera->GetPosition();
-		glm::vec2 cam_p0    = glm::vec2(camerapos.x, camerapos.z);
-		glm::vec2 cam_p1    = glm::vec2(camerapos.x + vecmove.x * RADIUS_COLLISION, camerapos.z + vecmove.y * RADIUS_COLLISION);
-		glm::vec2 wall_p0   = glm::vec2(wall.x, wall.y);
-		glm::vec2 wall_p1   = glm::vec2(wall.z, wall.w);
-		float wallangle     = atan2(wall_p1.y - wall_p0.y, wall_p1.x - wall_p0.x);
-		if (intersect(cam_p0, cam_p1, wall_p0, wall_p1))
-		{
-			float dx0 = cam_p0.x  - cam_p1.x;
-			float dy0 = cam_p0.y  - cam_p1.y;
-			float dx1 = wall_p0.x - wall_p1.x;
-			float dy1 = wall_p0.y - wall_p1.y;
-			float m0  = sqrt(dx0*dx0 + dy0*dy0);
-			float m1  = sqrt(dx1*dx1 + dy1*dy1);
-			float angle = acos((dx0*dx1 + dy0*dy1) / (m0 * m1));
-#define sgn(x) (x >= 0.0f ? 1.0f : -1.0)
-			vecmove.x = sgn(angle) * vecmove.x * abs(cos(wallangle));
-			vecmove.y = sgn(angle) * vecmove.y * abs(sin(wallangle));
-#undef sgn
-		}
-	}
-	if (recalculate)
-	{
-		camera->Move(vecmove.x, 0.0f, vecmove.y);
-		camera->Turn((float)(mousedeltax) * 0.01f);
-		camera->Recalculate();
-	}
+	movement(&camera, delta, keys, mousedeltax);
 	
 	// Draw (to the framebuffer)
 	tau_gra_framebuffer_use(&framebuffer);
