@@ -31,4 +31,5 @@ void   tau_gra_shader_use           (SHADER* sha);
 void   tau_gra_shader_setuniformMat4(SHADER* sha, const char* uniform, const GLfloat *value);
 void   tau_gra_shader_setuniformInt1(SHADER* sha, const char* uniform, const GLint value);
 void   tau_gra_shader_setuniformFlt1(SHADER* sha, const char* uniform, const GLfloat value);
+void   tau_gra_shader_setuniformFlt2(SHADER* sha, const char* uniform, const GLfloat* value);
 void   tau_gra_shader_setuniformFlt3(SHADER* sha, const char* uniform, const GLfloat* value);

@@ -151,6 +151,14 @@ void tau_gra_shader_setuniformFlt1(SHADER* sha, const char* uniform, const GLflo
 	GET_AND_CHECK_UNIFORM;
 	glUniform1f(id, value);
 }
+
+void tau_gra_shader_setuniformFlt2(SHADER* sha, const char* uniform, const GLfloat* value)
+{
+	GLint id;
+	GET_AND_CHECK_UNIFORM;
+	glUniform2fv(id, 1, value);
+}
+
 void tau_gra_shader_setuniformFlt3(SHADER* sha, const char* uniform, const GLfloat* value)
 {
 	GLint id;
