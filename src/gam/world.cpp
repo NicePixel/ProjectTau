@@ -209,7 +209,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	tau_gra_shader_setuniformFlt1(&shader_text, "totaltime", totaltime);
 	tau_gra_shader_setuniformMat4(&shader_text, "proj", glm::value_ptr(text_projection));
 	tau_gra_disableDepthTest();
-	tau_gra_font_rendertext(&font_default, std::string("[") + std::to_string(fps) + std::string("]"), 0, 2, 1.0f);
+	tau_gra_font_rendertext(&font_default, &shader_text, std::to_string(fps), 0, 2, 1.0f);
 	tau_gra_enableDepthTest();
 
 	// Render to screen

@@ -95,8 +95,8 @@ void begin_world(CTauCamera** camera)
 	tau_gra_shader_setuniformFlt1(&shatext, "totaltime", 0.0f);
 	tau_gra_shader_setuniformInt1(&shatext, "rainbow", 0);
 	tau_gra_shader_setuniformMat4(&shatext, "proj", glm::value_ptr(text_projection));
-	tau_gra_font_rendertext(&font, "Persistent data put into memory.",   0, 2+32, 1.75f);
-	tau_gra_font_rendertext(&font, "Starting world in a few seconds...", 0, 2,    1.75f);
+	tau_gra_font_rendertext(&font, &shatext, "Persistent data put into memory.",   0, 2+32, 1.75f);
+	tau_gra_font_rendertext(&font, &shatext, "Starting world in a few seconds...", 0, 2,    1.75f);
 
 	// Show the scene, re-enable the depth testing.
 	tau_gra_updatewindow();

@@ -1,13 +1,16 @@
 #version 330 core
 layout (location = 0) in vec4 vertex;
 out vec2 TexCoords;
+
 out vec2 pos;
 
 uniform mat4 proj;
+uniform mat4 model;
 
 void main()
 {
-    gl_Position = proj * vec4(vertex.xy, 0.0, 1.0);
+	mat4 mvp    = proj * model;
+	gl_Position = mvp * vec4(vertex.xy, 0.0, 1.0);
     TexCoords = vertex.zw;
-	pos = vertex.xz;
+	pos = gl_Position.xz;
 }  

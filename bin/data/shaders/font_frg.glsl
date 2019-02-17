@@ -7,13 +7,13 @@ uniform float totaltime;
 uniform sampler2D texture0;
 
 const float PI = 3.1415;
-const float RAINBOW_SCALE = 64.0f;
-const float RAINBOW_SPEED = 28.0f;
+const float RAINBOW_SCALE = 32.0f;
+const float RAINBOW_SPEED = 0.1f;
 
 void main()
 {    
 	float movex = pos.x - totaltime * RAINBOW_SPEED;
-	vec2 posn = vec2(movex / 800.0, pos.y / 600.0);
+	vec2 posn = vec2(movex, pos.y);
 	
 	float r = abs(sin(posn.x*RAINBOW_SCALE + 0));
 	float g = abs(sin(posn.x*RAINBOW_SCALE + PI/4));
