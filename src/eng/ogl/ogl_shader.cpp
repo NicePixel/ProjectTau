@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <list>
 #include "ogl_exception.h"
 #include "ogl_shader.h"
 #include "../print.h"
@@ -40,70 +41,22 @@ SHADER tau_gra_shader_make(const char* fileVertex, const char* fileFragment)
 	sha.program = prg;
 
 	// Set up uniforms
+	std::list<std::string> uniforms
 	{
-		std::pair<std::string, GLint> uniform;
-		uniform.first = "proj";
-		setuniform(&uniform.second, prg, uniform.first.c_str());
-		sha.m_uniforms.insert(uniform);
-	}
-
+		"proj", "view", "model",
+		"texture0", "texture1",
+		"uvscale",
+		"tintcolor", "onlycolor",
+		"totaltime"
+	};
+	for (std::string uni: uniforms)
 	{
-		std::pair<std::string, GLint> uniform;
-		uniform.first = "view";
-		setuniform(&uniform.second, prg, uniform.first.c_str());
-		sha.m_uniforms.insert(uniform);
+		std::pair<std::string, GLint> unfirompair;
+		unfirompair.first = uni;
+		setuniform(&unfirompair.second, prg, unfirompair.first.c_str());
+		sha.m_uniforms.insert(unfirompair);
 	}
-
-	{
-		std::pair<std::string, GLint> uniform;
-		uniform.first = "model";
-		setuniform(&uniform.second, prg, uniform.first.c_str());
-		sha.m_uniforms.insert(uniform);
-	}
-
-	{
-		std::pair<std::string, GLint> uniform;
-		uniform.first = "texture0";
-		setuniform(&uniform.second, prg, uniform.first.c_str());
-		sha.m_uniforms.insert(uniform);
-	}
-	{
-		std::pair<std::string, GLint> uniform;
-		uniform.first = "texture1";
-		setuniform(&uniform.second, prg, uniform.first.c_str());
-		sha.m_uniforms.insert(uniform);
-	}
-	{
-		std::pair<std::string, GLint> uniform;
-		uniform.first = "uvscale";
-		setuniform(&uniform.second, prg, uniform.first.c_str());
-		sha.m_uniforms.insert(uniform);
-	}
-	{
-		std::pair<std::string, GLint> uniform;
-		uniform.first = "lightpos";
-		setuniform(&uniform.second, prg, uniform.first.c_str());
-		sha.m_uniforms.insert(uniform);
-	}
-	{
-		std::pair<std::string, GLint> uniform;
-		uniform.first = "tintcolor";
-		setuniform(&uniform.second, prg, uniform.first.c_str());
-		sha.m_uniforms.insert(uniform);
-	}
-	{
-		std::pair<std::string, GLint> uniform;
-		uniform.first = "onlycolor";
-		setuniform(&uniform.second, prg, uniform.first.c_str());
-		sha.m_uniforms.insert(uniform);
-	}
-	{
-		std::pair<std::string, GLint> uniform;
-		uniform.first = "totaltime";
-		setuniform(&uniform.second, prg, uniform.first.c_str());
-		sha.m_uniforms.insert(uniform);
-	}
-
+	
 	// Delete unused
 	glDetachShader(prg, vtx);
 	glDetachShader(prg, frg);
