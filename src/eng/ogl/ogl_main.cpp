@@ -5,6 +5,7 @@
 #include "ogl_font.h"
 #include "ogl_texture.h"
 #include "../print.h"
+#include "../configuration.h"
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include <GL/gl.h>
@@ -17,14 +18,26 @@ static TVIDEO_INFO videoinfo;
 #define TED_CURSUB "tau_gra_init"
 void tau_gra_init(const char* windowTitle)
 {
+	nlohmann::json config = tau_config_load("data/configurations/graphical.json");
 	GLenum e;
+	
+	// No error checking, nor correction.
+	// Rationale behind this is that if the configuration file is bad,
+	// then the user has altered it, but not correctly. This should be told to
+	// the user.
+	videoinfo.width   = config["videwidth"];
+	videoinfo.height  = config["videoheight"];
+	videoinfo.mode    = config["videomode"];
+	videoinfo.clear_r = config["videodefaultcolour"][0];
+	videoinfo.clear_g = config["videodefaultcolour"][1];
+	videoinfo.clear_b = config["videodefaultcolour"][2];
 
 	// Init SDL
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 		throw CTauGraException(SDL_GetError());
 
 	// Init window
-	window = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
+	window = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, videoinfo.width, videoinfo.height, SDL_WINDOW_OPENGL | videoinfo.mode);
 	if (!window)
 		throw CTauGraException(SDL_GetError());
 	context = SDL_GL_CreateContext(window);
@@ -36,7 +49,7 @@ void tau_gra_init(const char* windowTitle)
 		throw CTauGraException(reinterpret_cast<const char*>(glewGetErrorString(e)));
 
 	// Initial state
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(videoinfo.clear_r, videoinfo.clear_g, videoinfo.clear_b, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -48,10 +61,6 @@ void tau_gra_init(const char* windowTitle)
 	// Call other initialization functions
 	tau_gra_font_init();
 	tau_gra_mesh_init();
-	
-	videoinfo.width  = 800;
-	videoinfo.height = 600;
-	videoinfo.mode   = TAU_VIDEOMODE_WINDOW;
 }
 
 #undef  TED_CURSUB

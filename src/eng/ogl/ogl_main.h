@@ -32,12 +32,13 @@ typedef struct
 {
 	int width, height;
 	int mode;
+	float clear_r, clear_g, clear_b;
 } TVIDEO_INFO;
 
 TVIDEO_INFO tau_gra_videogetinfo(void);
 
 // Switch video modes
 #define TAU_VIDEOMODE_WINDOW     0
-#define TAU_VIDEOMODE_FULLSCREEN SDL_WINDOW_FULLSCREEN
+#define TAU_VIDEOMODE_FULLSCREEN SDL_WINDOW_FULLSCREEN	/* expected to be 1 */
 void tau_gra_videomode(int mode);
 
