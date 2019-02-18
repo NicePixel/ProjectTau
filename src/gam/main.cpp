@@ -2,7 +2,6 @@
 #include "SDL2/SDL.h"
 #include "../eng/entry.h"
 #include "../eng/print.h"
-#include "../eng/object.h"
 #include "../eng/camera.h"
 #include "../eng/render.h"
 #include "world.h"
