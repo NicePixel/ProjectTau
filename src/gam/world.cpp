@@ -42,11 +42,11 @@ void g_world_start_persistent(void)
 {
 	// Load persistent data
 	mesh_walls       = tau_gra_mesh_make("data/models/world0.obj");
-	shader_default   = tau_gra_shader_make("data/shaders/default_vtx.glsl", "data/shaders/default_frg.glsl");
-	shader_text      = tau_gra_shader_make("data/shaders/font_vtx.glsl", "data/shaders/font_frg.glsl");
-	shader_screen    = tau_gra_shader_make("data/shaders/screen_vtx.glsl", "data/shaders/screen_frg.glsl");
-	shader_backdrop  = tau_gra_shader_make("data/shaders/backdrop_vtx.glsl", "data/shaders/backdrop_frg.glsl");
-	shader_loading   = tau_gra_shader_make("data/shaders/loading_vtx.glsl", "data/shaders/loading_frg.glsl");
+	shader_default   = tau_gra_shader_make("data/shaders/default.json");
+	shader_text      = tau_gra_shader_make("data/shaders/font.json");
+	shader_screen    = tau_gra_shader_make("data/shaders/screen.json");
+	shader_backdrop  = tau_gra_shader_make("data/shaders/backdrop.json");
+	shader_loading   = tau_gra_shader_make("data/shaders/loading.json");
 	font_default     = tau_gra_font_make("data/fonts/default.ttf", 32);
 	textures[0]      = tau_gra_texture_make("data/textures/checkerboard.png");
 	textures[1]      = tau_gra_texture_make("data/textures/becareful.png");

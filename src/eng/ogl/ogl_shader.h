@@ -23,7 +23,7 @@ typedef struct _SHADER
 	mapuniform m_uniforms;
 } SHADER;
 
-SHADER tau_gra_shader_make          (const char* fileVertex, const char* fileFragment);
+SHADER tau_gra_shader_make          (const char* fileshader);
 void   tau_gra_shader_destroy       (SHADER* sha);
 void   tau_gra_shader_use           (SHADER* sha);
 

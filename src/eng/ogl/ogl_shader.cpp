@@ -5,19 +5,24 @@
 #include "ogl_shader.h"
 #include "../print.h"
 #include "../io.h"
+#include "../configuration.h"
 
 static GLuint initshader(const std::string& shaderSource, GLenum shaderType);
 static int    setuniform(GLint* outUniform, GLuint program, const char* name);
 
 #undef  TED_CURSUB
 #define TED_CURSUB "tau_gra_shader_make"
-SHADER tau_gra_shader_make(const char* fileVertex, const char* fileFragment)
+SHADER tau_gra_shader_make(const char* fileshader)
 {
-	SHADER sha;
-	std::string strVertex   = tau_io_file_allcontent(fileVertex);
-	std::string strFragment = tau_io_file_allcontent(fileFragment);
+	TED_PRINT_INFO(std::string("Creating shader from JSON ") + fileshader);
+	nlohmann::json config = tau_config_load(fileshader);
+	std::string filevertex   = config["vertex"];
+	std::string filefragment = config["fragment"];
 
-	TED_PRINT_INFO("Creating shader UID = ?");
+	SHADER sha;
+	std::string strVertex   = tau_io_file_allcontent(filevertex  .c_str());
+	std::string strFragment = tau_io_file_allcontent(filefragment.c_str());
+
 
 	// If something goes wrong with shader initalization,
 	// an exception will be thrown.
