@@ -83,38 +83,33 @@ static GLint getUniform(mapuniform map, const char* uniform)
 // Set uniforms with given type
 #undef  TED_CURSUB
 #define TED_CURSUB "tau_gra_shader_setuniform*"
-#define GET_AND_CHECK_UNIFORM id = getUniform(sha->m_uniforms, uniform); if (id < 0) return
+#define GET_AND_CHECK_UNIFORM GLint id = getUniform(sha->m_uniforms, uniform); if (id < 0) { return; }
 void tau_gra_shader_setuniformMat4(SHADER* sha, const char* uniform, const GLfloat *value)
 {
-	GLint id;
 	GET_AND_CHECK_UNIFORM;
 	glUniformMatrix4fv(id, 1, GL_FALSE, value);
 }
 
 void tau_gra_shader_setuniformInt1(SHADER* sha, const char* uniform, const GLint value)
 {
-	GLint id;
 	GET_AND_CHECK_UNIFORM;
 	glUniform1i(id, value);
 }
 
 void tau_gra_shader_setuniformFlt1(SHADER* sha, const char* uniform, const GLfloat value)
 {
-	GLint id;
 	GET_AND_CHECK_UNIFORM;
 	glUniform1f(id, value);
 }
 
 void tau_gra_shader_setuniformFlt2(SHADER* sha, const char* uniform, const GLfloat* value)
 {
-	GLint id;
 	GET_AND_CHECK_UNIFORM;
 	glUniform2fv(id, 1, value);
 }
 
 void tau_gra_shader_setuniformFlt3(SHADER* sha, const char* uniform, const GLfloat* value)
 {
-	GLint id;
 	GET_AND_CHECK_UNIFORM;
 	glUniform3fv(id, 1, value);
 }
