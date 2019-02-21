@@ -4,6 +4,7 @@
 #pragma once
 #include <GL/glew.h>
 #include <GL/GL.h>
+#include <vector>
 
 // MESH structure 
 // VBO is the vertex buffer object. 
@@ -23,6 +24,8 @@ void tau_gra_mesh_quit(void);
 // for the loaded .obj file with the given path.
 // Also holds the total amount of vertices the object is made of, this is useful
 // for rendering the loaded .obj.
+// Mesh can be also created from an array of floating points. The array should 
+// hold raw data to be put into GPU.
 //
 // !!!   !!!   !!!   !!!   !!!   !!!   !!!   !!!   !!!   !!!   !!!   !!!   !!!
 // The object in .obj file HAS TO BE TRIANGULATED.
@@ -34,6 +37,7 @@ void tau_gra_mesh_quit(void);
 //
 // Will throw CTauGraException if things go wrong.
 MESH tau_gra_mesh_make(const char* filepath);
+MESH tau_gra_mesh_make(std::vector<float> bufferdata);
 void tau_gra_mesh_delete(MESH* mesh);
 
 // Default square buffers which are used primarly for drawing text charcaters.

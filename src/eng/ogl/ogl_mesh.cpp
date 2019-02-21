@@ -222,6 +222,31 @@ void loadobj(GLuint* outVBO, GLuint* outVAO, const char* objfile, GLuint* outTot
 	glBindVertexArray(0);
 }
 
+MESH tau_gra_mesh_make(std::vector<float> bufferdata)
+{
+	MESH m;
+	
+	// Because the data format is predetermined, we know there is going to be 
+	// datalength/8 vertices
+	m.totalvertices = bufferdata.size() / 8;
+	
+	// Set up VAO
+	glGenVertexArrays(1, &m.vao);
+	glBindVertexArray(m.vao);
+
+	// Set up VBO
+	glGenBuffers(1, &m.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, m.vbo);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glBufferData(GL_ARRAY_BUFFER, bufferdata.size() * sizeof(GLfloat), &bufferdata[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	
+	return m;
+}
+
 #undef  TED_CURSUB
 #define TED_CURSUB "tau_gra_mesh_make"
 MESH tau_gra_mesh_make(const char* filepath)
