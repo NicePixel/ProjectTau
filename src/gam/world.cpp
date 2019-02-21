@@ -80,6 +80,9 @@ void g_world_start(CTauCamera** newcamera)
 	if (!newcamera)
 	{
 		TED_PRINT_ERROR("There is no camera entity, \"EID=1\"!!!");
+		*newcamera = new CTauCamera(0.0f, CAMERA_HEIGHT, 0.0f);
+		(*newcamera)->Turn(0.0f);
+		(*newcamera)->Recalculate();
 	}
 }
 
