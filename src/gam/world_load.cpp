@@ -41,36 +41,39 @@ void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, WORL
 	int typecount         = config["type-count"];
 	std::vector<std::vector<glm::vec4> > walldata(typecount);
 	
-	int buildwall_type, data_index = 0;
-	glm::vec4 buildwall;
-	for (nlohmann::json::iterator it = data.begin(); it != data.end(); ++it)
+	// Fill wall data
 	{
-		nlohmann::json wall = *it;
+		int buildwall_type, data_index = 0;
+		glm::vec4 buildwall;
+		for (nlohmann::json::iterator it = data.begin(); it != data.end(); ++it)
+		{
+			nlohmann::json wall = *it;
 
-		// Wall type
-		if ((data_index % 3) == 0)
-		{
-			buildwall_type = (int) wall;
-		}
-		// First coordinate
-		else if ((data_index % 3) == 1)
-		{
-			glm::vec4 coords;
-			buildwall.x = (float) wall[0] * SCALE;
-			buildwall.y = (float) wall[1] * SCALE;
-		}
-		// Second coordinate
-		// This is last parameter we need to make a wall
-		else if ((data_index % 3) == 2)
-		{
-			buildwall.z = (float) wall[0] * SCALE;
-			buildwall.w = (float) wall[1] * SCALE;
-			
-			walldata[buildwall_type].push_back(buildwall);
-			collisionlines          .push_back(buildwall);
-		}
+			// Wall type
+			if ((data_index % 3) == 0)
+			{
+				buildwall_type = (int) wall;
+			}
+			// First coordinate
+			else if ((data_index % 3) == 1)
+			{
+				glm::vec4 coords;
+				buildwall.x = (float) wall[0] * SCALE;
+				buildwall.y = (float) wall[1] * SCALE;
+			}
+			// Second coordinate
+			// This is last parameter we need to make a wall
+			else if ((data_index % 3) == 2)
+			{
+				buildwall.z = (float) wall[0] * SCALE;
+				buildwall.w = (float) wall[1] * SCALE;
+				
+				walldata[buildwall_type].push_back(buildwall);
+				collisionlines          .push_back(buildwall);
+			}
 
-		data_index++;
+			data_index++;
+		}
 	}
 
 	// Every type of wall has its own mesh.
