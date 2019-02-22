@@ -1,12 +1,12 @@
-#include <sstream>
 #include <vector>
 #include <utility>
 #include <iostream>
 #include <glm/glm.hpp>
-#include "world_load.h"
 #include "../eng/io.h"
 #include "../eng/print.h"
 #include "../eng/configuration.h"
+#include "world_load.h"
+#include "entity.h"
 
 typedef struct
 {
@@ -25,22 +25,6 @@ typedef struct
 	int v0_id, v1_id, v2_id;
 	int id;
 } TRI;
-
-// Entity structure type
-#include "entity.h"
-
-VERTEX find_vertex(int id, std::vector<VERTEX>& vertices)
-{
-	VERTEX v;
-	for (unsigned int i = 0; i < vertices.size(); i++)
-	{
-		if (vertices.at(i).id == id)
-		{
-			return vertices.at(i);
-		}
-	}
-	return v;
-}
 
 #undef  TED_CURSUB
 #define TED_CURSUB "g_world_load"
@@ -73,16 +57,15 @@ void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, WORL
 		{
 			glm::vec4 coords;
 			buildwall.x = (float) wall[0] * SCALE;
-			buildwall.y = (float) wall[1] * HEIGHT;
+			buildwall.y = (float) wall[1] * SCALE;
 		}
 		// Second coordinate
 		// This is last parameter we need to make a wall
 		else if ((data_index % 3) == 2)
 		{
 			buildwall.z = (float) wall[0] * SCALE;
-			buildwall.w = (float) wall[1] * HEIGHT;
+			buildwall.w = (float) wall[1] * SCALE;
 			
-			TED_PRINT_INFO(std::string("Push wall... +") + std::to_string(buildwall_type));
 			walldata[buildwall_type].push_back(buildwall);
 			collisionlines          .push_back(buildwall);
 		}
@@ -90,8 +73,12 @@ void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, WORL
 		data_index++;
 	}
 
+	// Every type of wall has its own mesh.
+	// For each wall in every type, gather coordinates.
+	// After gathering, create a mesh and a texture.
 	for (int i = 0; i < typecount; i++)
 	{
+		std::string texturepath = types[i]["texture"];
 		std::vector<float> bufferdata;
 		std::vector<glm::vec4> walls = walldata.at(i);
 		for (unsigned int j = 0; j < walls.size(); j++)
@@ -99,49 +86,22 @@ void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, WORL
 			glm::vec4 wall = walls.at(j);
 			float topleft[8],  topright[8], bottomleft[8], bottomright[8];
 			float dx = (wall.x - wall.z) / SCALE;
-			float dy = (wall.y - wall.w) / HEIGHT;
+			float dy = (wall.y - wall.w) / SCALE;
 			float d  = sqrt(dx*dx + dy*dy);
+			float nx = -dy;
+			float ny = dx;
 
 			// Buffer data format:
 			// Vx Vy Vz Ux Uy Nx Ny Nz
-			float nx = -dy;
-			float ny = dx;
-			topleft[0] = wall.x; /* Vx */
-			topleft[1] = HEIGHT; /* Vy */
-			topleft[2] = wall.y; /* Vz */
-			topleft[3] = 0.0f;   /* Ux */
-			topleft[4] = 1.0f;   /* Uy */
-			topleft[5] = nx;     /* Nx */
-			topleft[6] = 0.0f;   /* Ny */
-			topleft[7] = ny;     /* Nz */
-			
-			topright[0] = wall.z;
-			topright[1] = HEIGHT;
-			topright[2] = wall.w;
-			topright[3] = d;
-			topright[4] = 1.0f;
-			topright[5] = nx;
-			topright[6] = 0.0f;
-			topright[7] = ny;
-			
-			bottomleft[0] = wall.x;
-			bottomleft[1] = 0.0f;
-			bottomleft[2] = wall.y;
-			bottomleft[3] = 0.0f;
-			bottomleft[4] = 0.0f;
-			bottomleft[5] = nx;
-			bottomleft[6] = 0.0f;
-			bottomleft[7] = ny;
-			
-			bottomright[0] = wall.z;
-			bottomright[1] = 0.0f;
-			bottomright[2] = wall.w;
-			bottomright[3] = d;
-			bottomright[4] = 0.0f;
-			bottomright[5] = nx;
-			bottomright[6] = 0.0f;
-			bottomright[7] = ny;
-			
+#define FILLARR(arr, Vx, Vy, Vz, Ux, Uy, Nx, Ny, Nz) \
+arr[0] = Vx; arr[1] = Vy; arr[2] = Vz;\
+arr[3] = Ux; arr[4] = Uy;\
+arr[5] = Nx; arr[6] = Ny; arr[7] = Nz;
+			FILLARR(topleft,     wall.x, HEIGHT, wall.y, 0.0f, 1.0f, nx, 0.0f, ny);
+			FILLARR(topright,    wall.z, HEIGHT, wall.w, d,    1.0f, nx, 0.0f, ny);
+			FILLARR(bottomleft,  wall.x, 0.0f,   wall.y, 0.0f, 0.0f, nx, 0.0f, ny);
+			FILLARR(bottomright, wall.z, 0.0f,   wall.w, d,    0.0f, nx, 0.0f, ny);
+#undef FILLARR
 #define PUSH(array) for (int i = 0; i < 8; i++) { bufferdata.push_back(array[i]); }
 			PUSH(bottomright);//\///////////////////////////\\\////|
 			PUSH(topright);//"`\\/'    .   .             ,, `\\//'||
@@ -156,7 +116,6 @@ void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, WORL
 		// Create a model consisting of a mesh and a texture
 		// Mesh is created from bufferdata, and texture is created from the
 		// appropriate texture's file path the wall's type uses.
-		std::string texturepath = types[i]["texture"];
 		model mdl;
 		mdl.first  = tau_gra_mesh_make(bufferdata);
 		mdl.second = tau_gra_texture_make(texturepath.c_str());
