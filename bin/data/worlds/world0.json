@@ -1,0 +1,22 @@
+{
+	"name": "BLOODY FIRESTORM",
+	"type-count": 2,
+	"types":
+	[
+		{
+			"texture": "data/textures/wall0.png",
+			"flags": 0
+		},
+		{
+			"texture": "data/textures/becareful.png",
+			"flags": 0
+		}
+	],
+	"data":
+	[
+		0, [0, 0], [2, 0],
+		1, [2, 0], [2, 4],
+		0, [2, 4], [0, 4],
+		0, [0, 4], [0, 0]
+	]
+}

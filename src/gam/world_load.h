@@ -2,5 +2,14 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include "entity.h"
+#include "../eng/r_mesh.h"
+#include "../eng/r_texture.h"
 
-void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, ENTITY* entities, int* entity_len);
+typedef std::pair<MESH, TEXTURE> model;
+typedef struct
+{
+	std::vector<model> bases;
+} WORLD;
+
+void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, WORLD* world);
+void g_world_destroy(WORLD* world);

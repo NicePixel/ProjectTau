@@ -15,7 +15,7 @@ static FRAMEBUFFER framebuffer;
 
 // Current world data
 #define CAMERA_HEIGHT 8.0f
-static MESH   mesh_walls;
+static WORLD  thisworld;
 static ENTITY entity[16];
 static int    entity_len;
 static std::vector<glm::vec4> collisions;
@@ -41,7 +41,7 @@ FONT g_world_getfont(void)
 void g_world_start_persistent(void)
 {
 	// Load persistent data
-	mesh_walls       = tau_gra_mesh_make("data/models/world0.obj");
+	//mesh_walls       = tau_gra_mesh_make("data/models/world0.obj");
 	shader_default   = tau_gra_shader_make("data/shaders/default.json");
 	shader_text      = tau_gra_shader_make("data/shaders/font.json");
 	shader_screen    = tau_gra_shader_make("data/shaders/screen.json");
@@ -60,7 +60,7 @@ void g_world_start_persistent(void)
 void g_world_start(CTauCamera** newcamera)
 {
 	totaltime = 0.0f;
-	g_world_load("world0", collisions, entity, &entity_len);
+	g_world_load("world0", collisions, &thisworld);
 	
 	// The created camera should be where the player spawns.
 	// Find the player spawner.
@@ -80,10 +80,10 @@ void g_world_start(CTauCamera** newcamera)
 	if (!newcamera)
 	{
 		TED_PRINT_ERROR("There is no camera entity, \"EID=1\"!!!");
-		*newcamera = new CTauCamera(0.0f, CAMERA_HEIGHT, 0.0f);
-		(*newcamera)->Turn(0.0f);
-		(*newcamera)->Recalculate();
 	}
+	*newcamera = new CTauCamera(0.0f, CAMERA_HEIGHT, 0.0f);
+	(*newcamera)->Turn(0.0f);
+	(*newcamera)->Recalculate();
 }
 
 static bool intersect(glm::vec2 p1, glm::vec2 p2, glm::vec2 q1, glm::vec2 q2)
@@ -94,7 +94,7 @@ static bool intersect(glm::vec2 p1, glm::vec2 p2, glm::vec2 q1, glm::vec2 q2)
 
 // Handle player movement
 // Recalculate camera's matrices only if its state changes (moving, rotating...)
-#define RADIUS_COLLISION 128.0f
+#define RADIUS_COLLISION 64.0f
 #define sgn(x) (x >= 0.0f ? 1.0f : -1.0)
 void movement(CTauCamera** camera, float delta, const Uint8* keys, int mousedeltax)
 {
@@ -141,26 +141,43 @@ void movement(CTauCamera** camera, float delta, const Uint8* keys, int mousedelt
 	// find the angle of the intersection. (the inner angle) `angle`
 	// * Intersection will make the player move alongside the wall, the side of 
 	// moving depends on the inner angle of the intersection.
-	glm::vec3 camerapos = (*camera)->GetPosition();
-	glm::vec2 cam_p0    = glm::vec2(camerapos.x, camerapos.z);
-	glm::vec2 cam_p1    = glm::vec2(camerapos.x + vecmove.x * RADIUS_COLLISION, camerapos.z + vecmove.y * RADIUS_COLLISION);
 	for (unsigned int i = 0; i < collisions.size(); i++)
 	{
-		glm::vec4 wall    = collisions.at(i);
-		glm::vec2 wall_p0 = glm::vec2(wall.x, wall.y);
-		glm::vec2 wall_p1 = glm::vec2(wall.z, wall.w);
-		float wallangle   = atan2(wall_p1.y - wall_p0.y, wall_p1.x - wall_p0.x);
+		glm::vec4 wall      = collisions.at(i);
+		glm::vec3 camerapos = (*camera)->GetPosition();
+		glm::vec2 cam_p0    = glm::vec2(camerapos.x, camerapos.z);
+		glm::vec2 cam_p1    = glm::vec2(camerapos.x + vecmove.x * RADIUS_COLLISION, camerapos.z + vecmove.y * RADIUS_COLLISION);
+		glm::vec2 wall_p0   = glm::vec2(wall.x, wall.y);
+		glm::vec2 wall_p1   = glm::vec2(wall.z, wall.w);
+		float wallangle     = atan2(wall_p1.y - wall_p0.y, wall_p1.x - wall_p0.x);
 		if (intersect(cam_p0, cam_p1, wall_p0, wall_p1))
 		{
-			float dx0   = cam_p0.x  - cam_p1.x;
-			float dy0   = cam_p0.y  - cam_p1.y;
-			float dx1   = wall_p0.x - wall_p1.x;
-			float dy1   = wall_p0.y - wall_p1.y;
-			float m0    = sqrt(dx0*dx0 + dy0*dy0);
-			float m1    = sqrt(dx1*dx1 + dy1*dy1);
+			//float wk = (wall_p1.y - wall_p0.y) / (wall_p1.x - wall_p0.x);
+			//if (abs(wall_p1.x - wall_p0.x) < 0.0001f)
+			//	wk = 0.0f;
+			//float wc = wall_p0.y - wk * wall_p0.x;
+			
+			//float pk = (cam_p1.y - cam_p0.y) / (cam_p1.x - cam_p0.x);
+			//float pc = cam_p1.y - pk * cam_p0.x;
+			
+			//float ix = (wc - pc) / (pk - wk);
+			//float iy = pk * ix + wc;
+			
+			float dx0 = cam_p0.x  - cam_p1.x;
+			float dy0 = cam_p0.y  - cam_p1.y;
+			float dx1 = wall_p0.x - wall_p1.x;
+			float dy1 = wall_p0.y - wall_p1.y;
+			float m0  = sqrt(dx0*dx0 + dy0*dy0);
+			float m1  = sqrt(dx1*dx1 + dy1*dy1);
 			float angle = acos((dx0*dx1 + dy0*dy1) / (m0 * m1));
-			vecmove.x   = sgn(angle) * vecmove.x * abs(cos(wallangle));
-			vecmove.y   = sgn(angle) * vecmove.y * abs(sin(wallangle));
+			//float angle = atan2(iy-cam_p1.y, ix-cam_p1.x);
+			
+			//vecmove.x = cos(-angle) * vecmove.x*5;
+			//vecmove.y = sin(-angle) * vecmove.y*5;
+#define sgn(x) (x >= 0.0f ? 1.0f : -1.0)
+			vecmove.x = sgn(angle) * vecmove.x * abs(cos(wallangle));
+			vecmove.y = sgn(angle) * vecmove.y * abs(sin(wallangle));
+#undef sgn
 		}
 	}
 	
@@ -170,7 +187,6 @@ void movement(CTauCamera** camera, float delta, const Uint8* keys, int mousedelt
 		(*camera)->Recalculate();
 	}
 }
-#undef sgn
 
 #undef  TED_CURSUB
 #define TED_CURSUB "g_world_tick"
@@ -203,8 +219,13 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	// Walls
 	tau_gra_shader_setuniformMat4(&shader_default, "model", glm::value_ptr(identity));
 	tau_gra_shader_setuniformFlt1(&shader_default, "uvscale", 1.0f);
-	tau_gra_texture_use(&textures[1], TAU_TEXTUREUNIT_0);
-	tau_gra_ren_mesh(&mesh_walls);
+	for (model m: thisworld.bases)
+	{
+		MESH part       = m.first;
+		TEXTURE texture = m.second;
+		tau_gra_texture_use(&texture, TAU_TEXTUREUNIT_0);
+		tau_gra_ren_mesh(&part);
+	}
 
 	// Text
 	tau_gra_shader_use(&shader_text);
@@ -234,5 +255,6 @@ void g_world_quit(void)
 	tau_gra_shader_destroy(&shader_screen);
 	tau_gra_texture_destroy(&textures[1]);
 	tau_gra_texture_destroy(&textures[0]);
-	tau_gra_mesh_delete(&mesh_walls);
+	
+	g_world_destroy(&thisworld);
 }
