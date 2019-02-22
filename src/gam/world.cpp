@@ -84,6 +84,10 @@ void g_world_start(CTauCamera** newcamera)
 	*newcamera = new CTauCamera(0.0f, CAMERA_HEIGHT, 0.0f);
 	(*newcamera)->Turn(0.0f);
 	(*newcamera)->Recalculate();
+	
+	tau_gra_shader_use(&shader_backdrop);
+	tau_gra_shader_setuniformFlt3(&shader_backdrop, "colour_ceiling", thisworld.colours[0]);
+	tau_gra_shader_setuniformFlt3(&shader_backdrop, "colour_ground",  thisworld.colours[1]);
 }
 
 static bool intersect(glm::vec2 p1, glm::vec2 p2, glm::vec2 q1, glm::vec2 q2)

@@ -9,6 +9,7 @@ typedef std::pair<MESH, TEXTURE> model;
 typedef struct
 {
 	std::vector<model> bases;
+	float colours[2][3];
 } WORLD;
 
 void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, WORLD* world);

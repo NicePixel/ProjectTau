@@ -125,6 +125,15 @@ arr[5] = Nx; arr[6] = Ny; arr[7] = Nz;
 		world->bases.push_back(mdl);
 	}
 	
+	// Load colours
+	{
+		nlohmann::json colours = config["colours"];
+#define LOADCOLOUR(arr, what) \
+arr[0] = colours[what][0]; arr[1] = colours[what][1]; arr[2] = colours[what][2];
+		LOADCOLOUR(world->colours[0], "ceiling");
+		LOADCOLOUR(world->colours[1], "ground");
+	}
+	
 }
 
 void g_world_destroy(WORLD* world)

@@ -52,7 +52,7 @@ SHADER tau_gra_shader_make(const char* fileshader)
 		"texture0", "texture1",
 		"uvscale",
 		"tintcolor", "onlycolor",
-		"totaltime"
+		"totaltime", "colour_ceiling", "colour_ground"
 	};
 	for (std::string uni: uniforms)
 	{
