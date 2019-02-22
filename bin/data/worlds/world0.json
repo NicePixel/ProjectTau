@@ -1,15 +1,18 @@
 {
 	"name": "BLOODY FIRESTORM",
+	"colour":
+	{
+		"ceiling": [0.3, 0.3, 0.3],
+		"ground":  [0.2, 0.4, 0.2]
+	},
 	"type-count": 2,
 	"types":
 	[
 		{
-			"texture": "data/textures/wall0.png",
-			"flags": 0
+			"texture": "data/textures/wall0.png"
 		},
 		{
-			"texture": "data/textures/becareful.png",
-			"flags": 0
+			"texture": "data/textures/becareful.png"
 		}
 	],
 	"data":
