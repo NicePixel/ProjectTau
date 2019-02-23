@@ -26,6 +26,7 @@ public:
 	const float*    GetValueProjection(void) const { return glm::value_ptr(m_projection); }
 	const float*    GetValueView(void)       const { return glm::value_ptr(m_view);       }
 	const glm::vec3 GetPosition(void)        const { return m_position;                   }
+	const float     GetAngle(void)           const { return m_angle;                      }
 
 private:
 	const glm::vec3 m_initialPosition;

@@ -8,6 +8,7 @@
 #include "entity.h"
 
 // Persistent data
+static MESH        mesh_panel;
 static SHADER      shaders[5];
 static TEXTURE     textures[3];
 static FONT        font_default;
@@ -39,7 +40,7 @@ FONT g_world_getfont(void)
 void g_world_start_persistent(void)
 {
 	// Load persistent data
-	//mesh_walls       = tau_gra_mesh_make("data/models/world0.obj");
+	mesh_panel       = tau_gra_mesh_make("data/models/panel.obj");
 	shader_default   = tau_gra_shader_make("data/shaders/default.json");
 	shader_text      = tau_gra_shader_make("data/shaders/font.json");
 	shader_screen    = tau_gra_shader_make("data/shaders/screen.json");
@@ -228,6 +229,24 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 		tau_gra_texture_use(&texture, TAU_TEXTUREUNIT_0);
 		tau_gra_ren_mesh(&part);
 	}
+	
+	// Entities
+	for (ENTITY e: thisworld.entities)
+	{
+		glm::vec3 camerapos = camera->GetPosition();
+		float dx = camerapos.x - e.x;
+		float dy = camerapos.z - e.y;
+		float angle = -atan2(dy, dx);
+		TED_PRINT_INFO(std::to_string(angle));
+		
+		glm::mat4 model = identity;
+		model           = glm::translate(model, glm::vec3((float)e.x, 0.0f, (float)e.y));
+		model           = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+		model           = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		tau_gra_shader_setuniformMat4(&shader_default, "model", glm::value_ptr(model));
+		tau_gra_texture_use(&textures[texture_exclamation], TAU_TEXTUREUNIT_0);
+		tau_gra_ren_mesh(&mesh_panel);
+	}
 
 	// Text
 	glm::vec3 hudcolour(1.0f, 0.2f, 0.0f);
@@ -260,6 +279,7 @@ void g_world_quit(void)
 	tau_gra_shader_destroy(&shader_screen);
 	tau_gra_texture_destroy(&textures[1]);
 	tau_gra_texture_destroy(&textures[0]);
+	tau_gra_mesh_delete(&mesh_panel);
 	
 	g_world_destroy(&thisworld);
 }
