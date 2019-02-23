@@ -232,8 +232,11 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	}
 
 	// Text
+	glm::vec3 hudcolour(1.0f, 0.2f, 0.0f);
 	tau_gra_shader_use(&shader_text);
 	tau_gra_shader_setuniformInt1(&shader_text, "texture0", 0);
+	tau_gra_shader_setuniformInt1(&shader_text, "onlycolor", 1);
+	tau_gra_shader_setuniformFlt3(&shader_text, "tintcolor", glm::value_ptr(hudcolour));
 	tau_gra_shader_setuniformFlt1(&shader_text, "totaltime", totaltime);
 	tau_gra_shader_setuniformMat4(&shader_text, "proj", glm::value_ptr(text_projection));
 	tau_gra_disableDepthTest();
