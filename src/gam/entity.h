@@ -2,9 +2,9 @@
 
 typedef struct
 {
-	int x, y;
-	int id;
-	int eid;
-	int flags;
-	int angle;
+	int   x, y;
+	int   id;
+	int   eid;
+	int   flags;
+	float angle;
 } ENTITY;

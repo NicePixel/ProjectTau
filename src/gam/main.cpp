@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 // average over FRAMETIME_SIZE frames... delta will be (1 / FRAMETIME_SIZE)...
 #undef  TED_CURSUB
 #define TED_CURSUB "fps_tick"
-#define FRAMETIME_SIZE 512
+#define FRAMETIME_SIZE 256
 static float frametimes[FRAMETIME_SIZE];
 static uint32_t frame = 0;
 void fps_tick(float* delta, int* fps)

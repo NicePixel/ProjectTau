@@ -125,6 +125,23 @@ arr[5] = Nx; arr[6] = Ny; arr[7] = Nz;
 		world->bases.push_back(mdl);
 	}
 	
+	// Load entities
+	{
+		nlohmann::json entities = config["entities"];
+		for (nlohmann::json::iterator it = entities.begin(); it != entities.end(); ++it)
+		{
+			nlohmann::json edata = *it;
+			ENTITY e;
+			e.eid   = (int)   edata[0];
+			e.id    = (int)   edata[1];
+			e.x     = (float) edata[2][0];
+			e.y     = (float) edata[2][1];
+			e.angle = (float) edata[3];
+			e.flags = 0;
+			world->entities.push_back(e);
+		}
+	}
+	
 	// Load colours
 	{
 		nlohmann::json colours = config["colours"];

@@ -9,6 +9,7 @@ typedef std::pair<MESH, TEXTURE> model;
 typedef struct
 {
 	std::vector<model> bases;
+	std::vector<ENTITY> entities;
 	float colours[2][3];
 } WORLD;
 

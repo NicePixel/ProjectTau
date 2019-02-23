@@ -16,8 +16,6 @@ static FRAMEBUFFER framebuffer;
 // Current world data
 #define CAMERA_HEIGHT 8.0f
 static WORLD  thisworld;
-static ENTITY entity[16];
-static int    entity_len;
 static std::vector<glm::vec4> collisions;
 static float totaltime;
 
@@ -64,14 +62,14 @@ void g_world_start(CTauCamera** newcamera)
 	
 	// The created camera should be where the player spawns.
 	// Find the player spawner.
-	for (int i = 0; i < entity_len; i++)
+	for (ENTITY e: thisworld.entities)
 	{
-		ENTITY e = entity[i];
 		switch(e.eid)
 		{
 			case EID_PLAYERSPAWN:
-				*newcamera = new CTauCamera((float) e.x, CAMERA_HEIGHT, (float)e.y);
-				(*newcamera)->Turn((float)(e.angle) * (-3.1415f / 180.0f));
+				TED_PRINT_INFO(std::to_string(e.angle));
+				*newcamera = new CTauCamera((float) e.x, CAMERA_HEIGHT, (float) e.y);
+				(*newcamera)->Turn(e.angle);
 				(*newcamera)->Recalculate();
 			default:
 				break;
@@ -80,10 +78,10 @@ void g_world_start(CTauCamera** newcamera)
 	if (!newcamera)
 	{
 		TED_PRINT_ERROR("There is no camera entity, \"EID=1\"!!!");
+		*newcamera = new CTauCamera(0.0f, CAMERA_HEIGHT, 0.0f);
+		(*newcamera)->Turn(0.0f);
+		(*newcamera)->Recalculate();
 	}
-	*newcamera = new CTauCamera(0.0f, CAMERA_HEIGHT, 0.0f);
-	(*newcamera)->Turn(0.0f);
-	(*newcamera)->Recalculate();
 	
 	tau_gra_shader_use(&shader_backdrop);
 	tau_gra_shader_setuniformFlt3(&shader_backdrop, "colour_ceiling", thisworld.colours[0]);
