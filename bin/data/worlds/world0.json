@@ -5,14 +5,20 @@
 		"ceiling": [0.5, 0.5, 0.5],
 		"ground":  [0.5, 0.5, 0.5]
 	},
+	"textures":
+	[
+		"data/textures/wall0.png",
+		"data/textures/falcon.png",
+		"data/textures/checkerboard.png"
+	],
 	"type-count": 2,
 	"types":
 	[
 		{
-			"texture": "data/textures/wall0.png"
+			"texture": 0
 		},
 		{
-			"texture": "data/textures/falcon.png"
+			"texture": 1
 		}
 	],
 	"data":
@@ -26,6 +32,6 @@
 	],
 	"entities":
 	[
-		[1, -1, [16, 16], 3.1415]
+		[1, -1, [16, 16], [8, 8], 3.1415, 2]
 	]
 }

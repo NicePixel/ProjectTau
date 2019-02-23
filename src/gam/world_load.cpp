@@ -35,11 +35,24 @@ void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, WORL
 	std::string worldpath = std::string("data/worlds/") + name + ".json";
 	TED_PRINT_INFO(std::string("Begin world ") + worldpath);
 
-	nlohmann::json config = tau_config_load(worldpath.c_str());
-	nlohmann::json data   = config["data"];
-	nlohmann::json types  = config["types"];
-	int typecount         = config["type-count"];
+	nlohmann::json config   = tau_config_load(worldpath.c_str());
+	nlohmann::json data     = config["data"];
+	nlohmann::json types    = config["types"];
+	nlohmann::json textures = config["textures"];
+	int typecount           = config["type-count"];
 	std::vector<std::vector<glm::vec4> > walldata(typecount);
+	std::vector<TEXTURE> texturedata(textures.size());
+	
+	// Load textures
+	{
+		unsigned int i = 0;
+		for (nlohmann::json::iterator it = textures.begin(); it != textures.end(); ++it)
+		{
+			std::string texturepath = *it;
+			texturedata[i++] = tau_gra_texture_make(texturepath.c_str());
+		}
+	}
+	
 	
 	// Fill wall data
 	{
@@ -81,7 +94,7 @@ void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, WORL
 	// After gathering, create a mesh and a texture.
 	for (int i = 0; i < typecount; i++)
 	{
-		std::string texturepath = types[i]["texture"];
+		//std::string texturepath = types[i]["texture"];
 		std::vector<float> bufferdata;
 		std::vector<glm::vec4> walls = walldata.at(i);
 		for (unsigned int j = 0; j < walls.size(); j++)
@@ -121,7 +134,7 @@ arr[5] = Nx; arr[6] = Ny; arr[7] = Nz;
 		// appropriate texture's file path the wall's type uses.
 		model mdl;
 		mdl.first  = tau_gra_mesh_make(bufferdata);
-		mdl.second = tau_gra_texture_make(texturepath.c_str());
+		mdl.second = texturedata[i]; //tau_gra_texture_make(texturepath.c_str());
 		world->bases.push_back(mdl);
 	}
 	
@@ -132,12 +145,15 @@ arr[5] = Nx; arr[6] = Ny; arr[7] = Nz;
 		{
 			nlohmann::json edata = *it;
 			ENTITY e;
-			e.eid   = (int)   edata[0];
-			e.id    = (int)   edata[1];
-			e.x     = (float) edata[2][0];
-			e.y     = (float) edata[2][1];
-			e.angle = (float) edata[3];
-			e.flags = 0;
+			e.eid     = (int)   edata[0];
+			e.id      = (int)   edata[1];
+			e.x       = (float) edata[2][0];
+			e.y       = (float) edata[2][1];
+			e.width   = (float) edata[3][0];
+			e.height  = (float) edata[3][1];
+			e.angle   = (float) edata[4];
+			e.flags   = 0;
+			e.texture = texturedata[edata[5]];
 			world->entities.push_back(e);
 		}
 	}
