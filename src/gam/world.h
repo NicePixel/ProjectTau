@@ -16,9 +16,11 @@
 #define shader_loading_index    4
 
 // For the textures array...
+#define TEXTURES_PERSISTENT_SIZE 4
 #define texture_checkerboard 0
 #define texture_wall         1
 #define texture_exclamation  2
+#define texture_hudtimer     3
 
 #include "../eng/render.h"
 SHADER g_world_getshader(unsigned int index);

@@ -10,7 +10,7 @@
 // Persistent data
 static MESH        mesh_panel;
 static SHADER      shaders[5];
-static TEXTURE     textures[3];
+static TEXTURE     textures[4];
 static FONT        font_default;
 static FRAMEBUFFER framebuffer;
 
@@ -47,10 +47,13 @@ void g_world_start_persistent(void)
 	shader_backdrop  = tau_gra_shader_make("data/shaders/backdrop.json");
 	shader_loading   = tau_gra_shader_make("data/shaders/loading.json");
 	font_default     = tau_gra_font_make("data/fonts/default.ttf", 32);
-	textures[0]      = tau_gra_texture_make("data/textures/checkerboard.png");
-	textures[1]      = tau_gra_texture_make("data/textures/becareful.png");
-	textures[2]      = tau_gra_texture_make("data/textures/warn.png");
 	framebuffer      = tau_gra_framebuffer_make(800, 600);
+
+	// Textures
+	textures[texture_checkerboard] = tau_gra_texture_make("data/textures/checkerboard.png");
+	textures[texture_wall]         = tau_gra_texture_make("data/textures/wall0.png");
+	textures[texture_exclamation]  = tau_gra_texture_make("data/textures/warn.png");
+	textures[texture_hudtimer]     = tau_gra_texture_make("data/textures/hud/timer.png");
 }
 
 #undef  TED_CURSUB
@@ -276,8 +279,8 @@ void g_world_quit(void)
 	tau_gra_shader_destroy(&shader_default);
 	tau_gra_shader_destroy(&shader_text);
 	tau_gra_shader_destroy(&shader_screen);
-	tau_gra_texture_destroy(&textures[1]);
-	tau_gra_texture_destroy(&textures[0]);
+	for (int i = 0; i < TEXTURES_PERSISTENT_SIZE; i++)
+		tau_gra_texture_destroy(&textures[i]);
 	tau_gra_mesh_delete(&mesh_panel);
 	
 	g_world_destroy(&thisworld);
