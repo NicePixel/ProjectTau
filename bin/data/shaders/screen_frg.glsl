@@ -6,6 +6,7 @@ in vec2 pos;
 uniform sampler2D texture0;
 uniform sampler2D texture1;
 uniform int istext;
+uniform vec3 tintcolor = vec3(1.0f, 0.0f, 1.0f);
 
 out vec4 color;
 
@@ -49,6 +50,7 @@ void main(void)
 	if (istext > 0)
 	{
 		color.a = col.r; // Font uses only R channel.
+		col.rgb = tintcolor;
 	}
 	else
 	{
