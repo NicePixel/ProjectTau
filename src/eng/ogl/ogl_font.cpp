@@ -94,8 +94,8 @@ FONT tau_gra_font_make(const char* filepath, int size)
 		);
 
 		// Set texture options
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -122,34 +122,33 @@ void tau_gra_font_destroy(FONT* font)
 	}
 }
 
-void tau_gra_font_rendertext(FONT* font, SHADER* sha, const std::string& text, float x, float y, float scale)
+void tau_gra_font_rendertext(FONT* font, SHADER* sha, MESH* panel, CTauCamera* camera, const std::string& text, float x, float y, float scale)
 {
 	glBindVertexArray(VAO);
 
+	tau_gra_shader_setuniformFlt2(sha, "uvscale",   glm::value_ptr(glm::vec2(1.0f, -1.0f)));
+		
 	std::string::const_iterator c;
 	for (c = text.begin(); c != text.end(); c++)
 	{
 		FACE_CHARACTER ch = font->characters[*c];
 
-		GLfloat xpos = x + ch.bearing.x * scale;
-		GLfloat ypos = y - (ch.size.y - ch.bearing.y) * scale;
-		GLfloat w    = ch.size.x * scale;
-		GLfloat h    = ch.size.y * scale;
+		GLfloat xpos = (x + ch.bearing.x) * scale;
+		GLfloat ypos = (y - (ch.size.y - ch.bearing.y)) * scale;
+		GLfloat w    = ch.size.x * scale*0.5;
+		GLfloat h    = ch.size.y * scale*0.5;
 		
-		// Update the matrices inside the shader
-		// This can be put outside the loop?
-		// Maybe only translate the matrix, not scale and translate
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(xpos, ypos, 0.0f));
-		model = glm::scale(model, glm::vec3(w, h, 1.0f));
-		tau_gra_shader_setuniformMat4(sha, "model", glm::value_ptr(model));
+		tau_gra_shader_setuniformFlt2(sha, "scale2d", glm::value_ptr(glm::vec2(w, h)));
+		tau_gra_shader_setuniformFlt2(sha, "pos2d",   glm::value_ptr(glm::vec2(-1.0 + xpos + w, -1.0 + ypos + h)));
 
 		// Render glyph texture over quad
 		glBindTexture(GL_TEXTURE_2D, ch.gl_id);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//tau_gra_ren_mesh(panel);
+		tau_gra_ren_mesh_unitsquare();
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
 		
 		// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		x += (ch.advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
+		x += (ch.advance >> 6) ; // Bitshift by 6 to get value in pixels (2^6 = 64)
 	}
 	
 	glBindVertexArray(0);

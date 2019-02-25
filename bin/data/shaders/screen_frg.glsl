@@ -5,6 +5,7 @@ in vec2 pos;
 
 uniform sampler2D texture0;
 uniform sampler2D texture1;
+uniform int istext;
 
 out vec4 color;
 
@@ -45,7 +46,14 @@ vec3 postprocessing(void)
 void main(void)
 {
 	vec4 col = texture(texture0, uv);
-	color.a = 1.0;
+	if (istext > 0)
+	{
+		color.a = col.r; // Font uses only R channel.
+	}
+	else
+	{
+		color.a = 1.0;
+	}
 	
 	color.rgb = pow(col.rgb, vec3(gamma, gamma, gamma));
 }

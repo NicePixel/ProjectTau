@@ -42,7 +42,6 @@ void g_world_start_persistent(void)
 	// Load persistent data
 	mesh_panel       = tau_gra_mesh_make("data/models/panel.obj");
 	shader_default   = tau_gra_shader_make("data/shaders/default.json");
-	shader_text      = tau_gra_shader_make("data/shaders/font.json");
 	shader_screen    = tau_gra_shader_make("data/shaders/screen.json");
 	shader_backdrop  = tau_gra_shader_make("data/shaders/backdrop.json");
 	shader_loading   = tau_gra_shader_make("data/shaders/loading.json");
@@ -198,7 +197,6 @@ void movement(CTauCamera** camera, float delta, const Uint8* keys, int mousedelt
 #define TED_CURSUB "g_world_tick"
 void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, int mousedeltax, uint32_t frame)
 {
-	glm::mat4 text_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
 	glm::mat4 identity        = glm::mat4(1.0f);
 	totaltime += delta;
 	
@@ -249,26 +247,54 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 		tau_gra_texture_use(&e.texture, TAU_TEXTUREUNIT_0);
 		tau_gra_ren_mesh(&mesh_panel);
 	}
-
+	
+	/*tau_gra_disableDepthTest();
+	tau_gra_shader_setuniformFlt1(&shader_default, "uvscale", 1.0f);
+	tau_gra_font_rendertext(&font_default, &shader_default, &mesh_panel, camera, "TEST", 0, 2, 0.1f);
+	tau_gra_enableDepthTest();*/
 	// Text
+	/*glm::mat4 text_projection = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f);
 	glm::vec3 hudcolour(1.0f, 0.2f, 0.0f);
 	tau_gra_shader_use(&shader_text);
 	tau_gra_shader_setuniformInt1(&shader_text, "texture0", 0);
-	tau_gra_shader_setuniformInt1(&shader_text, "onlycolor", 1);
+	tau_gra_shader_setuniformInt1(&shader_text, "rentype", 0);
 	tau_gra_shader_setuniformFlt3(&shader_text, "tintcolor", glm::value_ptr(hudcolour));
 	tau_gra_shader_setuniformFlt1(&shader_text, "totaltime", totaltime);
 	tau_gra_shader_setuniformMat4(&shader_text, "proj", glm::value_ptr(text_projection));
 	tau_gra_disableDepthTest();
-	tau_gra_font_rendertext(&font_default, &shader_text, std::to_string(fps), 0, 2, 1.0f);
-	tau_gra_enableDepthTest();
+	tau_gra_font_rendertext(&font_default, &shader_text, &mesh_panel, "TEST", 0, 2, 1.0f);
+	tau_gra_enableDepthTest();*/
 
+	// HUD
+	{
+		/*glm::mat4 model = identity;
+		model           = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		model           = glm::rotate(model, 3.1415f, glm::vec3(1.0f, 1.0f, 0.0f));
+		model           = glm::scale(model, glm::vec3(8.0f, 8.0f, 8.0f));
+		tau_gra_shader_setuniformMat4(&shader_default, "model", glm::value_ptr(model));
+		tau_gra_texture_use(&textures[texture_hudtimer], TAU_TEXTUREUNIT_0);
+		tau_gra_disableDepthTest();
+		tau_gra_ren_mesh(&mesh_panel);
+		tau_gra_enableDepthTest();*/
+	}
+	
 	// Render to screen
 	tau_gra_framebuffer_use(nullptr);
 	tau_gra_clear(TAU_CLEAR_DEPTHBUFFER);
 	tau_gra_shader_use(&shader_screen);
 	tau_gra_shader_setuniformInt1(&shader_screen, "texture0", 0);
+	tau_gra_shader_setuniformFlt2(&shader_screen, "scale2d", glm::value_ptr(glm::vec2(1.0f, 1.0f)));
+	tau_gra_shader_setuniformFlt2(&shader_screen, "pos2d", glm::value_ptr(glm::vec2(0.0f, 0.0f)));
+	tau_gra_shader_setuniformFlt2(&shader_screen, "uvscale", glm::value_ptr(glm::vec2(1.0f, 1.0f)));
+	tau_gra_shader_setuniformInt1(&shader_screen, "istext", 0);
 	tau_gra_texture_use(&framebuffer.attachedtexture, TAU_TEXTUREUNIT_0);
 	tau_gra_ren_mesh_unitsquare();
+	tau_gra_disableDepthTest();
+	tau_gra_shader_setuniformFlt2(&shader_screen, "scale2d", glm::value_ptr(glm::vec2(0.2f, 0.2f)));
+	tau_gra_shader_setuniformInt1(&shader_screen, "istext", 1);
+	tau_gra_font_rendertext(&font_default, &shader_screen, &mesh_panel, camera, "Nyx, nyx...", 0, 2, 0.005f);
+	tau_gra_font_rendertext(&font_default, &shader_screen, &mesh_panel, camera, "Tis a fairy tale now!", 0, 64, 0.005f);
+	tau_gra_enableDepthTest();
 }
 
 void g_world_quit(void)
@@ -277,7 +303,6 @@ void g_world_quit(void)
 	tau_gra_font_destroy(&font_default);
 	tau_gra_shader_destroy(&shader_backdrop);
 	tau_gra_shader_destroy(&shader_default);
-	tau_gra_shader_destroy(&shader_text);
 	tau_gra_shader_destroy(&shader_screen);
 	for (int i = 0; i < TEXTURES_PERSISTENT_SIZE; i++)
 		tau_gra_texture_destroy(&textures[i]);

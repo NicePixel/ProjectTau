@@ -48,10 +48,10 @@ SHADER tau_gra_shader_make(const char* fileshader)
 	// Set up uniforms
 	std::list<std::string> uniforms
 	{
-		"proj", "view", "model",
+		"proj", "view", "model", "pos2d", "scale2d",
 		"texture0", "texture1",
 		"uvscale",
-		"tintcolor", "onlycolor",
+		"tintcolor", "onlycolor", "rentype", "istext",
 		"totaltime", "colour_ceiling", "colour_ground"
 	};
 	for (std::string uni: uniforms)
