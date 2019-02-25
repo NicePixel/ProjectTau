@@ -31,7 +31,7 @@ void tau_gra_font_init(void);
 void tau_gra_font_quit(void);
 FONT tau_gra_font_make(const char* filepath, int size);
 void tau_gra_font_destroy(FONT* font);
-void tau_gra_font_rendertext(FONT* font, SHADER* sha, MESH* panel, CTauCamera* camera, const std::string& text, float x, float y, float scale);
+void tau_gra_font_rendertext(FONT* font, SHADER* sha, const std::string& text, float x, float y, float scale);
 
 class CTauGraFontException : public std::exception
 {

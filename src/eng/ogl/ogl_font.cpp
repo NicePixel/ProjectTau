@@ -122,7 +122,7 @@ void tau_gra_font_destroy(FONT* font)
 	}
 }
 
-void tau_gra_font_rendertext(FONT* font, SHADER* sha, MESH* panel, CTauCamera* camera, const std::string& text, float x, float y, float scale)
+void tau_gra_font_rendertext(FONT* font, SHADER* sha, const std::string& text, float x, float y, float scale)
 {
 	glBindVertexArray(VAO);
 
@@ -143,9 +143,7 @@ void tau_gra_font_rendertext(FONT* font, SHADER* sha, MESH* panel, CTauCamera* c
 
 		// Render glyph texture over quad
 		glBindTexture(GL_TEXTURE_2D, ch.gl_id);
-		//tau_gra_ren_mesh(panel);
 		tau_gra_ren_mesh_unitsquare();
-		//glDrawArrays(GL_TRIANGLES, 0, 6);
 		
 		// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
 		x += (ch.advance >> 6) ; // Bitshift by 6 to get value in pixels (2^6 = 64)

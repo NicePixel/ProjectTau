@@ -157,17 +157,6 @@ void movement(CTauCamera** camera, float delta, const Uint8* keys, int mousedelt
 		float wallangle     = atan2(wall_p1.y - wall_p0.y, wall_p1.x - wall_p0.x);
 		if (intersect(cam_p0, cam_p1, wall_p0, wall_p1))
 		{
-			//float wk = (wall_p1.y - wall_p0.y) / (wall_p1.x - wall_p0.x);
-			//if (abs(wall_p1.x - wall_p0.x) < 0.0001f)
-			//	wk = 0.0f;
-			//float wc = wall_p0.y - wk * wall_p0.x;
-			
-			//float pk = (cam_p1.y - cam_p0.y) / (cam_p1.x - cam_p0.x);
-			//float pc = cam_p1.y - pk * cam_p0.x;
-			
-			//float ix = (wc - pc) / (pk - wk);
-			//float iy = pk * ix + wc;
-			
 			float dx0 = cam_p0.x  - cam_p1.x;
 			float dy0 = cam_p0.y  - cam_p1.y;
 			float dx1 = wall_p0.x - wall_p1.x;
@@ -175,10 +164,6 @@ void movement(CTauCamera** camera, float delta, const Uint8* keys, int mousedelt
 			float m0  = sqrt(dx0*dx0 + dy0*dy0);
 			float m1  = sqrt(dx1*dx1 + dy1*dy1);
 			float angle = acos((dx0*dx1 + dy0*dy1) / (m0 * m1));
-			//float angle = atan2(iy-cam_p1.y, ix-cam_p1.x);
-			
-			//vecmove.x = cos(-angle) * vecmove.x*5;
-			//vecmove.y = sin(-angle) * vecmove.y*5;
 #define sgn(x) (x >= 0.0f ? 1.0f : -1.0)
 			vecmove.x = sgn(angle) * vecmove.x * abs(cos(wallangle));
 			vecmove.y = sgn(angle) * vecmove.y * abs(sin(wallangle));
@@ -248,36 +233,6 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 		tau_gra_ren_mesh(&mesh_panel);
 	}
 	
-	/*tau_gra_disableDepthTest();
-	tau_gra_shader_setuniformFlt1(&shader_default, "uvscale", 1.0f);
-	tau_gra_font_rendertext(&font_default, &shader_default, &mesh_panel, camera, "TEST", 0, 2, 0.1f);
-	tau_gra_enableDepthTest();*/
-	// Text
-	/*glm::mat4 text_projection = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f);
-	glm::vec3 hudcolour(1.0f, 0.2f, 0.0f);
-	tau_gra_shader_use(&shader_text);
-	tau_gra_shader_setuniformInt1(&shader_text, "texture0", 0);
-	tau_gra_shader_setuniformInt1(&shader_text, "rentype", 0);
-	tau_gra_shader_setuniformFlt3(&shader_text, "tintcolor", glm::value_ptr(hudcolour));
-	tau_gra_shader_setuniformFlt1(&shader_text, "totaltime", totaltime);
-	tau_gra_shader_setuniformMat4(&shader_text, "proj", glm::value_ptr(text_projection));
-	tau_gra_disableDepthTest();
-	tau_gra_font_rendertext(&font_default, &shader_text, &mesh_panel, "TEST", 0, 2, 1.0f);
-	tau_gra_enableDepthTest();*/
-
-	// HUD
-	{
-		/*glm::mat4 model = identity;
-		model           = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		model           = glm::rotate(model, 3.1415f, glm::vec3(1.0f, 1.0f, 0.0f));
-		model           = glm::scale(model, glm::vec3(8.0f, 8.0f, 8.0f));
-		tau_gra_shader_setuniformMat4(&shader_default, "model", glm::value_ptr(model));
-		tau_gra_texture_use(&textures[texture_hudtimer], TAU_TEXTUREUNIT_0);
-		tau_gra_disableDepthTest();
-		tau_gra_ren_mesh(&mesh_panel);
-		tau_gra_enableDepthTest();*/
-	}
-	
 	// Render to screen
 	tau_gra_framebuffer_use(nullptr);
 	tau_gra_clear(TAU_CLEAR_DEPTHBUFFER);
@@ -292,8 +247,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	tau_gra_disableDepthTest();
 	tau_gra_shader_setuniformFlt2(&shader_screen, "scale2d", glm::value_ptr(glm::vec2(0.2f, 0.2f)));
 	tau_gra_shader_setuniformInt1(&shader_screen, "istext", 1);
-	tau_gra_font_rendertext(&font_default, &shader_screen, &mesh_panel, camera, "Nyx, nyx...", 0, 2, 0.005f);
-	tau_gra_font_rendertext(&font_default, &shader_screen, &mesh_panel, camera, "Tis a fairy tale now!", 0, 64, 0.005f);
+	tau_gra_font_rendertext(&font_default, &shader_screen, std::to_string(fps), 0, 2, 0.005f);
 	tau_gra_enableDepthTest();
 }
 
