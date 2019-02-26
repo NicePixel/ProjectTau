@@ -4,7 +4,6 @@ in vec2 uv;
 in vec2 pos;
 
 uniform sampler2D texture0;
-uniform sampler2D texture1;
 uniform int istext;
 uniform vec3 tintcolor = vec3(1.0f, 0.0f, 1.0f);
 
