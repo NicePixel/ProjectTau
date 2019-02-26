@@ -122,7 +122,7 @@ void tau_gra_font_destroy(FONT* font)
 	}
 }
 
-void tau_gra_font_rendertext(FONT* font, SHADER* sha, const std::string& text, float x, float y, float scale)
+void tau_gra_font_rendertext(FONT* font, SHADER* sha, const std::string& text, float x, float y, float scale, float aspectratio)
 {
 	glBindVertexArray(VAO);
 
@@ -136,10 +136,10 @@ void tau_gra_font_rendertext(FONT* font, SHADER* sha, const std::string& text, f
 		GLfloat xpos = (x + ch.bearing.x) * scale;
 		GLfloat ypos = (y - (ch.size.y - ch.bearing.y)) * scale;
 		GLfloat w    = ch.size.x * scale*0.5;
-		GLfloat h    = ch.size.y * scale*0.5;
+		GLfloat h    = ch.size.y * scale*0.5 * aspectratio;
 		
 		tau_gra_shader_setuniformFlt2(sha, "scale2d", glm::value_ptr(glm::vec2(w, h)));
-		tau_gra_shader_setuniformFlt2(sha, "pos2d",   glm::value_ptr(glm::vec2(-1.0 + xpos + w, -1.0 + ypos + h)));
+		tau_gra_shader_setuniformFlt2(sha, "pos2d",   glm::value_ptr(glm::vec2(-1.0 + xpos + w, -1.0f + (ypos + h))));
 
 		// Render glyph texture over quad
 		glBindTexture(GL_TEXTURE_2D, ch.gl_id);

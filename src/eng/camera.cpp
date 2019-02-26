@@ -6,11 +6,11 @@
 
 #include "camera.h"
 
-CTauCamera::CTauCamera(float x, float y, float z):
+CTauCamera::CTauCamera(float x, float y, float z, float aspectratio):
 	m_initialPosition(glm::vec3(x, y, z))
 {
 	m_position   = m_initialPosition;
-	m_projection = glm::perspective(3.1415f / 2.0f, 800.0f / 600.0f, 0.2f, 10000.0f);
+	m_projection = glm::perspective(3.1415f / 2.0f, aspectratio, 0.2f, 10000.0f);
 	m_angle      = 0.0f;
 	m_right      = glm::vec3(1.0, 0.0, 0.0);
 }

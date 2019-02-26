@@ -9,7 +9,7 @@
 class CTauCamera
 {
 public:
-	CTauCamera(float x, float y, float z);
+	CTauCamera(float x, float y, float z, float aspectratio);
 	~CTauCamera(void);
 
 	void Recalculate(void);

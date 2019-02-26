@@ -13,6 +13,7 @@ static SHADER      shaders[5];
 static TEXTURE     textures[4];
 static FONT        font_default;
 static FRAMEBUFFER framebuffer;
+static TVIDEO_INFO video;
 
 // Current world data
 #define CAMERA_HEIGHT 8.0f
@@ -39,6 +40,8 @@ FONT g_world_getfont(void)
 #define TED_CURSUB "g_world_start_persistent"
 void g_world_start_persistent(void)
 {
+	video = tau_gra_videogetinfo();
+
 	// Load persistent data
 	mesh_panel       = tau_gra_mesh_make("data/models/panel.obj");
 	shader_default   = tau_gra_shader_make("data/shaders/default.json");
@@ -46,7 +49,7 @@ void g_world_start_persistent(void)
 	shader_backdrop  = tau_gra_shader_make("data/shaders/backdrop.json");
 	shader_loading   = tau_gra_shader_make("data/shaders/loading.json");
 	font_default     = tau_gra_font_make("data/fonts/default.ttf", 32);
-	framebuffer      = tau_gra_framebuffer_make(800, 600);
+	framebuffer      = tau_gra_framebuffer_make(video.width, video.height);
 
 	// Textures
 	textures[texture_checkerboard] = tau_gra_texture_make("data/textures/checkerboard.png");
@@ -60,6 +63,8 @@ void g_world_start_persistent(void)
 #include "entity_table.h"
 void g_world_start(CTauCamera** newcamera)
 {
+	float aspectratio = (float)(video.width) / (float)(video.height);
+	
 	totaltime = 0.0f;
 	g_world_load("world0", collisions, &thisworld);
 	
@@ -71,7 +76,7 @@ void g_world_start(CTauCamera** newcamera)
 		{
 			case EID_PLAYERSPAWN:
 				TED_PRINT_INFO(std::to_string(e.angle));
-				*newcamera = new CTauCamera((float) e.x, CAMERA_HEIGHT, (float) e.y);
+				*newcamera = new CTauCamera((float) e.x, CAMERA_HEIGHT, (float) e.y, aspectratio);
 				(*newcamera)->Turn(e.angle);
 				(*newcamera)->Recalculate();
 			default:
@@ -81,7 +86,7 @@ void g_world_start(CTauCamera** newcamera)
 	if (!(*newcamera))
 	{
 		TED_PRINT_ERROR("There is no camera entity, \"EID=1\"!!!");
-		*newcamera = new CTauCamera(0.0f, CAMERA_HEIGHT, 0.0f);
+		*newcamera = new CTauCamera(0.0f, CAMERA_HEIGHT, 0.0f, aspectratio);
 		(*newcamera)->Turn(0.0f);
 		(*newcamera)->Recalculate();
 	}
@@ -200,7 +205,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	
 	// Prepare the default shader
 	tau_gra_shader_use(&shader_default);
-	tau_gra_shader_setuniformInt1(&shader_default, "texture0", 0);
+	//tau_gra_shader_setuniformInt1(&shader_default, "texture0", 0);
 	tau_gra_shader_setuniformInt1(&shader_default, "onlycolor", 0);
 	tau_gra_shader_setuniformMat4(&shader_default, "view", camera->GetValueView());
 	tau_gra_shader_setuniformMat4(&shader_default, "proj", camera->GetValueProjection());
@@ -234,10 +239,11 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	}
 	
 	// Render to screen
+	float aspectratio = (float)(video.width) / (float)(video.height);
 	tau_gra_framebuffer_use(nullptr);
 	tau_gra_clear(TAU_CLEAR_DEPTHBUFFER);
 	tau_gra_shader_use(&shader_screen);
-	tau_gra_shader_setuniformInt1(&shader_screen, "texture0", 0);
+	//tau_gra_shader_setuniformInt1(&shader_screen, "texture0", 0);
 	tau_gra_shader_setuniformFlt2(&shader_screen, "scale2d", glm::value_ptr(glm::vec2(1.0f, 1.0f)));
 	tau_gra_shader_setuniformFlt2(&shader_screen, "pos2d", glm::value_ptr(glm::vec2(0.0f, 0.0f)));
 	tau_gra_shader_setuniformFlt2(&shader_screen, "uvscale", glm::value_ptr(glm::vec2(1.0f, 1.0f)));
@@ -247,12 +253,12 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	tau_gra_disableDepthTest();
 	tau_gra_shader_setuniformFlt3(&shader_screen, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 	tau_gra_shader_setuniformFlt2(&shader_screen, "uvscale", glm::value_ptr(glm::vec2(1.0f, -1.0f)));
-	tau_gra_shader_setuniformFlt2(&shader_screen, "scale2d", glm::value_ptr(glm::vec2(0.05f, 0.05f)));
-	tau_gra_shader_setuniformFlt2(&shader_screen, "pos2d", glm::value_ptr(glm::vec2(-0.95f, -0.95f)));
+	tau_gra_shader_setuniformFlt2(&shader_screen, "scale2d", glm::value_ptr(glm::vec2(0.05f, 0.05f*aspectratio)));
+	tau_gra_shader_setuniformFlt2(&shader_screen, "pos2d", glm::value_ptr(glm::vec2(-0.95f, -1.0f + 0.05*aspectratio)));
 	tau_gra_texture_use(&textures[texture_hudtimer], TAU_TEXTUREUNIT_0);
 	tau_gra_ren_mesh_unitsquare();
 	tau_gra_shader_setuniformInt1(&shader_screen, "istext", 1);
-	tau_gra_font_rendertext(&font_default, &shader_screen, std::to_string(fps), 22, 2, 0.005f);
+	tau_gra_font_rendertext(&font_default, &shader_screen, std::to_string(fps), 22, 0, 0.005f, aspectratio);
 	tau_gra_enableDepthTest();
 }
 
