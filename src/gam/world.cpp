@@ -250,15 +250,22 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	tau_gra_shader_setuniformInt1(&shader_screen, "istext", 0);
 	tau_gra_texture_use(&framebuffer.attachedtexture, TAU_TEXTUREUNIT_0);
 	tau_gra_ren_mesh_unitsquare();
+	
+	// HUD
 	tau_gra_disableDepthTest();
-	tau_gra_shader_setuniformFlt3(&shader_screen, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
-	tau_gra_shader_setuniformFlt2(&shader_screen, "uvscale", glm::value_ptr(glm::vec2(1.0f, -1.0f)));
-	tau_gra_shader_setuniformFlt2(&shader_screen, "scale2d", glm::value_ptr(glm::vec2(0.05f, 0.05f*aspectratio)));
-	tau_gra_shader_setuniformFlt2(&shader_screen, "pos2d", glm::value_ptr(glm::vec2(-0.95f, -1.0f + 0.05*aspectratio)));
-	tau_gra_texture_use(&textures[texture_hudtimer], TAU_TEXTUREUNIT_0);
-	tau_gra_ren_mesh_unitsquare();
-	tau_gra_shader_setuniformInt1(&shader_screen, "istext", 1);
-	tau_gra_font_rendertext(&font_default, &shader_screen, std::to_string(fps), 22, 0, 0.005f, aspectratio);
+	{
+		glm::vec3 colourhud(1.0f, 1.0f, 1.0f);
+		tau_gra_shader_setuniformFlt3(&shader_screen, "tintcolor", glm::value_ptr(colourhud));
+		tau_gra_shader_setuniformFlt2(&shader_screen, "uvscale", glm::value_ptr(glm::vec2(1.0f, -1.0f)));
+		
+		// Timer
+		tau_gra_shader_setuniformFlt2(&shader_screen, "scale2d", glm::value_ptr(glm::vec2(0.05f, 0.05f*aspectratio)));
+		tau_gra_shader_setuniformFlt2(&shader_screen, "pos2d", glm::value_ptr(glm::vec2(-0.95f, -1.0f + 0.05*aspectratio)));
+		tau_gra_texture_use(&textures[texture_hudtimer], TAU_TEXTUREUNIT_0);
+		tau_gra_ren_mesh_unitsquare();
+		tau_gra_shader_setuniformInt1(&shader_screen, "istext", 1);
+		tau_gra_font_rendertext(&font_default, &shader_screen, std::to_string((int)floor(totaltime)) + "s; FPS:" + std::to_string(fps), 22, 0, 0.005f, aspectratio);
+	}
 	tau_gra_enableDepthTest();
 }
 
