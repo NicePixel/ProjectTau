@@ -205,7 +205,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	
 	// Prepare the default shader
 	tau_gra_shader_use(&shader_default);
-	//tau_gra_shader_setuniformInt1(&shader_default, "texture0", 0);
+	tau_gra_shader_setuniformInt1(&shader_default, "texture0", 0);
 	tau_gra_shader_setuniformInt1(&shader_default, "onlycolor", 0);
 	tau_gra_shader_setuniformMat4(&shader_default, "view", camera->GetValueView());
 	tau_gra_shader_setuniformMat4(&shader_default, "proj", camera->GetValueProjection());
@@ -243,7 +243,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	tau_gra_framebuffer_use(nullptr);
 	tau_gra_clear(TAU_CLEAR_DEPTHBUFFER);
 	tau_gra_shader_use(&shader_screen);
-	//tau_gra_shader_setuniformInt1(&shader_screen, "texture0", 0);
+	tau_gra_shader_setuniformInt1(&shader_screen, "texture0", 0);
 	tau_gra_shader_setuniformFlt2(&shader_screen, "scale2d", glm::value_ptr(glm::vec2(1.0f, 1.0f)));
 	tau_gra_shader_setuniformFlt2(&shader_screen, "pos2d", glm::value_ptr(glm::vec2(0.0f, 0.0f)));
 	tau_gra_shader_setuniformFlt2(&shader_screen, "uvscale", glm::value_ptr(glm::vec2(1.0f, 1.0f)));
