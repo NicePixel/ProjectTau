@@ -8,7 +8,7 @@
 #include "entity.h"
 
 // Persistent data
-static MESH        mesh_panel;
+static MESH        mesh_panel, mesh_crate, mesh_indent;
 static SHADER      shaders[5];
 static TEXTURE     textures[4];
 static FONT        font_default;
@@ -44,6 +44,8 @@ void g_world_start_persistent(void)
 
 	// Load persistent data
 	mesh_panel       = tau_gra_mesh_make("data/models/panel.obj");
+	mesh_crate       = tau_gra_mesh_make("data/models/crate.obj");
+	mesh_indent      = tau_gra_mesh_make("data/models/indent.obj");
 	shader_default   = tau_gra_shader_make("data/shaders/default.json");
 	shader_screen    = tau_gra_shader_make("data/shaders/screen.json");
 	shader_backdrop  = tau_gra_shader_make("data/shaders/backdrop.json");
@@ -224,18 +226,34 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	// Entities
 	for (ENTITY e: thisworld.entities)
 	{
-		glm::vec3 camerapos = camera->GetPosition();
-		float dx = camerapos.x - e.x;
-		float dy = camerapos.z - e.y;
-		float angle = -atan2(dy, dx);
+		glm::mat4 model  = identity;
+		MESH* mesh       = nullptr;
+		switch(e.eid)
+		{
+			default:
+			case 1:
+				{
+				glm::vec3 camerapos = camera->GetPosition();
+				float dx = camerapos.x - e.x;
+				float dy = camerapos.z - e.y;
+				float angle = -atan2(dy, dx);
 		
-		glm::mat4 model = identity;
-		model           = glm::translate(model, glm::vec3((float)e.x, (float)e.height, (float)e.y));
-		model           = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
-		model           = glm::scale(model, glm::vec3(1.0, e.height, e.width));
+				mesh            = &mesh_panel;
+				model           = glm::translate(model, glm::vec3((float)e.x, (float)e.height, (float)e.y));
+				model           = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+				model           = glm::scale(model, glm::vec3(1.0, e.height, e.width));
+				}
+				break;
+			case 2:
+				mesh            = &mesh_indent;
+				model           = glm::translate(model, glm::vec3((float)e.x, (float)e.height, (float)e.y));
+				model           = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+				break;
+		}
+
 		tau_gra_shader_setuniformMat4(&shader_default, "model", glm::value_ptr(model));
 		tau_gra_texture_use(&e.texture, TAU_TEXTUREUNIT_0);
-		tau_gra_ren_mesh(&mesh_panel);
+		tau_gra_ren_mesh(mesh);
 	}
 	
 	// Render to screen
@@ -279,6 +297,8 @@ void g_world_quit(void)
 	for (int i = 0; i < TEXTURES_PERSISTENT_SIZE; i++)
 		tau_gra_texture_destroy(&textures[i]);
 	tau_gra_mesh_delete(&mesh_panel);
+	tau_gra_mesh_delete(&mesh_crate);
+	tau_gra_mesh_delete(&mesh_indent);
 	
 	g_world_destroy(&thisworld);
 }
