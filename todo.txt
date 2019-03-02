@@ -1,0 +1,8 @@
+* A box which player can move by bumping into it.
+
+* A button entity. When pushed in some way, triggers an event.
+
+* Every entity can be triggered in some way. Trigger target should be a unique
+entity id.
+
+* A way for player to check collision against entities
