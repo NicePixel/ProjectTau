@@ -249,6 +249,11 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 				model           = glm::translate(model, glm::vec3((float)e.x, (float)e.height, (float)e.y));
 				model           = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
 				break;
+			case 3:
+				mesh            = &mesh_crate;
+				model           = glm::translate(model, glm::vec3((float)e.x, (float)e.height, (float)e.y));
+				model           = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+				break;
 		}
 
 		tau_gra_shader_setuniformMat4(&shader_default, "model", glm::value_ptr(model));
