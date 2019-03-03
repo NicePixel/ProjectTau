@@ -231,7 +231,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 		switch(e.eid)
 		{
 			default:
-			case 1:
+			case EID_PLAYERSPAWN:
 				{
 				glm::vec3 camerapos = camera->GetPosition();
 				float dx = camerapos.x - e.x;
@@ -244,12 +244,12 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 				model           = glm::scale(model, glm::vec3(1.0, e.height, e.width));
 				}
 				break;
-			case 2:
+			case EID_CRATEINDENT:
 				mesh            = &mesh_indent;
 				model           = glm::translate(model, glm::vec3((float)e.x, (float)e.height, (float)e.y));
 				model           = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
 				break;
-			case 3:
+			case EID_CRATE:
 				mesh            = &mesh_crate;
 				model           = glm::translate(model, glm::vec3((float)e.x, (float)e.height, (float)e.y));
 				model           = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
