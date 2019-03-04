@@ -226,8 +226,10 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	// Entities
 	for (ENTITY e: thisworld.entities)
 	{
-		glm::mat4 model  = identity;
-		MESH* mesh       = nullptr;
+		glm::mat4 model      = identity;
+		MESH* mesh           = nullptr;
+		int rendercollision  = 0;
+		
 		switch(e.eid)
 		{
 			default:
@@ -246,12 +248,13 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 				break;
 			case EID_CRATEINDENT:
 				mesh            = &mesh_indent;
-				model           = glm::translate(model, glm::vec3((float)e.x, (float)e.height, (float)e.y));
+				model           = glm::translate(model, glm::vec3((float)e.x, 0.0f, (float)e.y));
 				model           = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
 				break;
 			case EID_CRATE:
+				rendercollision = 1;
 				mesh            = &mesh_crate;
-				model           = glm::translate(model, glm::vec3((float)e.x, (float)e.height, (float)e.y));
+				model           = glm::translate(model, glm::vec3((float)e.x, 0.0f, (float)e.y));
 				model           = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
 				break;
 		}
@@ -259,6 +262,16 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 		tau_gra_shader_setuniformMat4(&shader_default, "model", glm::value_ptr(model));
 		tau_gra_texture_use(&e.texture, TAU_TEXTUREUNIT_0);
 		tau_gra_ren_mesh(mesh);
+		
+		if (rendercollision)
+		{
+			glm::mat4 debug = identity;
+			debug           = glm::translate(model, glm::vec3((float)e.x, 0.0f, (float)e.y));
+			debug           = glm::scale(model, glm::vec3((float)e.width, (float)e.height, (float)e.width));
+			tau_gra_shader_setuniformMat4(&shader_default, "model", glm::value_ptr(debug));
+			tau_gra_texture_use(&textures[texture_checkerboard], TAU_TEXTUREUNIT_0);
+			tau_gra_ren_mesh(mesh);
+		}
 	}
 	
 	// Render to screen
