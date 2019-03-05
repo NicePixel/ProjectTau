@@ -2,6 +2,7 @@
 
 #include "../eng/r_texture.h"
 
+#define E_FLAG_HANDSELECT 1
 typedef struct
 {
 	int   x, y;

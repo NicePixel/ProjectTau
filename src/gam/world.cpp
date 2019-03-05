@@ -20,6 +20,7 @@ static TVIDEO_INFO video;
 static WORLD  thisworld;
 static std::vector<glm::vec4> collisions;
 static float totaltime;
+static ENTITY* hands;
 
 SHADER g_world_getshader(unsigned int index)
 {
@@ -68,6 +69,7 @@ void g_world_start(CTauCamera** newcamera)
 	float aspectratio = (float)(video.width) / (float)(video.height);
 	
 	totaltime = 0.0f;
+	hands = nullptr;
 	g_world_load("world0", collisions, &thisworld);
 	
 	// The created camera should be where the player spawns.
@@ -104,10 +106,51 @@ static bool intersect(glm::vec2 p1, glm::vec2 p2, glm::vec2 q1, glm::vec2 q2)
            (((p1.x-q1.x)*(q2.y-q1.y) - (p1.y-q1.y)*(q2.x-q1.x)) * ((p2.x-q1.x)*(q2.y-q1.y) - (p2.y-q1.y)*(q2.x-q1.x)) < 0);
 }
 
+#undef  TED_CURSUB
+#define TED_CURSUB "hands_drop"
+void hands_drop(void)
+{
+	if (hands)
+	{
+		(*hands).flags ^= E_FLAG_HANDSELECT;
+		TED_PRINT_INFO(std::to_string(hands->flags));
+	}
+	hands = nullptr;
+}
+
+#undef  TED_CURSUB
+#define TED_CURSUB "hands_pickupnearest"
+void hands_pickupnearest(CTauCamera* camera)
+{
+	const float MAX_PICKUPDIST = 14.0f;
+	
+	// Only certain entities can be picked up...
+	// One is EID_CRATE, the create entity.
+	for (ENTITY& e: thisworld.entities)
+	{
+		if (e.eid != EID_CRATE)
+			continue;
+		float alpha         = camera->GetAngle();
+		glm::vec3 camerapos = camera->GetPosition();
+		glm::vec2 ray_pos0(camerapos.x, camerapos.z);
+		glm::vec2 ray_pos1(camerapos.x + cos(alpha) * MAX_PICKUPDIST, camerapos.z + sin(alpha) * MAX_PICKUPDIST);
+		glm::vec2 ent_pos0(e.x - (e.width / 2.0f) * cos(alpha + 3.1415f/2.0f), e.y - (e.width / 2.0f) * sin(alpha + 3.1415f/2.0f));
+		glm::vec2 ent_pos1(e.x + (e.width / 2.0f) * cos(alpha + 3.1415f/2.0f), e.y + (e.width / 2.0f) * sin(alpha + 3.1415f/2.0f));
+		if (intersect(ray_pos0, ray_pos1, ent_pos0, ent_pos1))
+		{
+			e.flags = E_FLAG_HANDSELECT;
+			hands   = &e;
+			TED_PRINT_INFO("Selected an entity...");
+		}
+	}
+}
+
 // Handle player movement
 // Recalculate camera's matrices only if its state changes (moving, rotating...)
 #define RADIUS_COLLISION 64.0f
 #define sgn(x) (x >= 0.0f ? 1.0f : -1.0)
+#undef  TED_CURSUB
+#define TED_CURSUB "movement"
 void movement(CTauCamera** camera, float delta, const Uint8* keys, int mousedeltax)
 {
 	const float movementSpeed = 16.0f   * delta;
@@ -136,14 +179,27 @@ void movement(CTauCamera** camera, float delta, const Uint8* keys, int mousedelt
 		(*camera)->Turn(+lookSpeed);
 		recalculate = true;
 	}
-	
+	if (keys[SDL_SCANCODE_SPACE])
+	{
+		if (!hands)
+		{
+			TED_PRINT_INFO("Pickup");
+			hands_pickupnearest(*camera);
+		}
+	}	
+	else if (keys[SDL_SCANCODE_Q])
+	{
+		TED_PRINT_INFO("Drop");
+		hands_drop();
+	}
+
 	// Handle mouse
 	if ((float)(mousedeltax) > 0.0f || (float)(mousedeltax) < 0.0f)
 	{
 		(*camera)->Turn((float)(mousedeltax) * 0.01f);
 		recalculate = true;
 	}
-	
+
 	// For every wall's line,
 	// * calculate the line's relative angle to the coordinate system.
 	//   `wallangle`
@@ -224,11 +280,25 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	}
 	
 	// Entities
-	for (ENTITY e: thisworld.entities)
+	for (ENTITY& e: thisworld.entities)
 	{
 		glm::mat4 model      = identity;
 		MESH* mesh           = nullptr;
-		int rendercollision  = 0;
+		float render_height  = e.height;
+		float render_x       = e.x;
+		float render_y       = e.y;
+		float render_rotate  = 0.0f;
+		
+		if (e.flags & E_FLAG_HANDSELECT)
+		{
+			render_rotate  = camera->GetAngle();
+			render_height += camera->GetPosition().y * (1.0/8.0);
+			render_x       = camera->GetPosition().x + cos(render_rotate) * 5;
+			render_y       = camera->GetPosition().z + sin(render_rotate) * 5;
+			e.x = camera->GetPosition().x;
+			e.y = camera->GetPosition().z;
+			
+		}
 		
 		switch(e.eid)
 		{
@@ -252,27 +322,25 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 				model           = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
 				break;
 			case EID_CRATE:
-				rendercollision = 1;
 				mesh            = &mesh_crate;
-				model           = glm::translate(model, glm::vec3((float)e.x, 0.0f, (float)e.y));
+				model           = glm::translate(model, glm::vec3(render_x, render_height, render_y));
+				model           = glm::rotate(model, -render_rotate, glm::vec3(0.0f, 1.0f, 0.0f));
 				model           = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
 				break;
 		}
+		
+		if (e.flags & E_FLAG_HANDSELECT)
+			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(0.2f, 0.75f + sin(frame/256.0f)/8.0f, 0.7f)));
+		else
+			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 
 		tau_gra_shader_setuniformMat4(&shader_default, "model", glm::value_ptr(model));
 		tau_gra_texture_use(&e.texture, TAU_TEXTUREUNIT_0);
 		tau_gra_ren_mesh(mesh);
-		
-		if (rendercollision)
-		{
-			glm::mat4 debug = identity;
-			debug           = glm::translate(model, glm::vec3((float)e.x, 0.0f, (float)e.y));
-			debug           = glm::scale(model, glm::vec3((float)e.width, (float)e.height, (float)e.width));
-			tau_gra_shader_setuniformMat4(&shader_default, "model", glm::value_ptr(debug));
-			tau_gra_texture_use(&textures[texture_checkerboard], TAU_TEXTUREUNIT_0);
-			tau_gra_ren_mesh(mesh);
-		}
 	}
+	
+	// Make sure we're using the default tint value...
+	tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 	
 	// Render to screen
 	float aspectratio = (float)(video.width) / (float)(video.height);
