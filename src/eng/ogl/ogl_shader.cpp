@@ -23,7 +23,6 @@ SHADER tau_gra_shader_make(const char* fileshader)
 	std::string strVertex   = tau_io_file_allcontent(filevertex  .c_str());
 	std::string strFragment = tau_io_file_allcontent(filefragment.c_str());
 
-
 	// If something goes wrong with shader initalization,
 	// an exception will be thrown.
 	GLuint vtx = initshader(strVertex, GL_VERTEX_SHADER);
@@ -46,22 +45,24 @@ SHADER tau_gra_shader_make(const char* fileshader)
 	sha.program = prg;
 
 	// Set up uniforms
-	std::list<std::string> uniforms
 	{
-		"proj", "view", "model", "pos2d", "scale2d",
-		"texture0", "texture1",
-		"uvscale",
-		"tintcolor", "onlycolor", "rentype", "istext",
-		"totaltime", "colour_ceiling", "colour_ground"
-	};
-	for (std::string uni: uniforms)
-	{
-		std::pair<std::string, GLint> unfirompair;
-		unfirompair.first = uni;
-		setuniform(&unfirompair.second, prg, unfirompair.first.c_str());
-		sha.m_uniforms.insert(unfirompair);
+		std::list<std::string> uniforms
+		{
+			"proj", "view", "model", "pos2d", "scale2d",
+			"texture0", "texture1",
+			"uvscale",
+			"tintcolor", "onlycolor", "rentype", "istext",
+			"totaltime", "colour_ceiling", "colour_ground"
+		};
+		for (std::string uni: uniforms)
+		{
+			std::pair<std::string, GLint> unfirompair;
+			unfirompair.first = uni;
+			setuniform(&unfirompair.second, prg, unfirompair.first.c_str());
+			sha.m_uniforms.insert(unfirompair);
+		}
 	}
-	
+
 	// Delete unused
 	glDetachShader(prg, vtx);
 	glDetachShader(prg, frg);
@@ -137,9 +138,7 @@ int setuniform(GLint* outUniform, GLuint program, const char* name)
 {
 	*outUniform = glGetUniformLocation(program, name);
 	if (*outUniform == -1)
-	{
 		return 1;
-	}
 	return 0;
 }
 

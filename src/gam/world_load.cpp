@@ -64,9 +64,7 @@ void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, WORL
 
 			// Wall type
 			if ((data_index % 3) == 0)
-			{
 				buildwall_type = (int) wall;
-			}
 			// First coordinate
 			else if ((data_index % 3) == 1)
 			{

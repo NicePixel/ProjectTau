@@ -52,9 +52,7 @@ void fps_tick(float* delta, int* fps)
 	frame++;
 	
 	for (unsigned int i = 0; i < FRAMETIME_SIZE; i++)
-	{
 		avgframetime += frametimes[i];
-	}
 	avgframetime /= FRAMETIME_SIZE;
 	
 	timeold = timenow;
@@ -96,9 +94,7 @@ void begin_world(CTauCamera** camera)
 	// world. If they do not, we tell what's happened.
 	g_world_start(camera);
 	if (!(*camera))
-	{
 		TED_PRINT_ERROR("Camera is null...");
-	}
 }
 
 #undef  TED_CURSUB
@@ -129,23 +125,12 @@ void knot(void)
 		const Uint8* keys = SDL_GetKeyboardState(0);
 		SDL_GetMouseState(&mx, &my);
 		while (SDL_PollEvent(&e))
-		{
 			if (e.type == SDL_QUIT)
-			{
 				r = 0;
-			}
-		}
 		if (keys[SDL_SCANCODE_F2])
 		{
 			TVIDEO_INFO vid = tau_gra_videogetinfo();
-			if (vid.mode == TAU_VIDEOMODE_FULLSCREEN)
-			{
-				tau_gra_videomode(TAU_VIDEOMODE_WINDOW);
-			}
-			else
-			{
-				tau_gra_videomode(TAU_VIDEOMODE_FULLSCREEN);
-			}
+			tau_gra_videomode((vid.mode == TAU_VIDEOMODE_FULLSCREEN) ? TAU_VIDEOMODE_WINDOW : TAU_VIDEOMODE_FULLSCREEN);
 		}
 
 		g_world_tick(camera, delta, fps, keys, mx - mx_old, frame);
@@ -154,8 +139,7 @@ void knot(void)
 		mx_old  = mx;
 		my_old  = my;
 	} while (r);
-
 	delete(camera);
-
+	
 	g_world_quit();
 }

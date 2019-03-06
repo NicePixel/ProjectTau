@@ -24,17 +24,15 @@ void CTauCamera::Recalculate(void)
 {
 	const float pitch = 0.0f;
 	const glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
-	
+
 	glm::vec3 front;
 	front.x = cos(m_angle) * cos(pitch);
 	front.y = sin(pitch);
 	front.z = sin(m_angle) * cos(pitch);
-	front = glm::normalize(front);
+	front   = glm::normalize(front);
 
-	// Also re-calculate the Right and Up vector
-	m_right = glm::normalize(glm::cross(front, up));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-
-	m_view = glm::lookAt(m_position, m_position + front, up);
+	m_right = glm::normalize(glm::cross(front, up));
+	m_view  = glm::lookAt(m_position, m_position + front, up);
 }
 
 void CTauCamera::ForceLook(float x, float y, float z)

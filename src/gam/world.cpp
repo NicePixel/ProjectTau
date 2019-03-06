@@ -140,7 +140,6 @@ void hands_pickupnearest(CTauCamera* camera)
 		{
 			e.flags = E_FLAG_HANDSELECT;
 			hands   = &e;
-			TED_PRINT_INFO("Selected an entity...");
 		}
 	}
 }
@@ -179,19 +178,10 @@ void movement(CTauCamera** camera, float delta, const Uint8* keys, int mousedelt
 		(*camera)->Turn(+lookSpeed);
 		recalculate = true;
 	}
-	if (keys[SDL_SCANCODE_SPACE])
-	{
-		if (!hands)
-		{
-			TED_PRINT_INFO("Pickup");
-			hands_pickupnearest(*camera);
-		}
-	}	
+	if (keys[SDL_SCANCODE_SPACE] && !hands)
+		hands_pickupnearest(*camera);
 	else if (keys[SDL_SCANCODE_Q])
-	{
-		TED_PRINT_INFO("Drop");
 		hands_drop();
-	}
 
 	// Handle mouse
 	if ((float)(mousedeltax) > 0.0f || (float)(mousedeltax) < 0.0f)
@@ -233,7 +223,7 @@ void movement(CTauCamera** camera, float delta, const Uint8* keys, int mousedelt
 #undef sgn
 		}
 	}
-	
+
 	if (recalculate)
 	{
 		(*camera)->Move(vecmove.x, 0.0f, vecmove.y);
@@ -247,20 +237,20 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 {
 	glm::mat4 identity        = glm::mat4(1.0f);
 	totaltime += delta;
-	
+
 	movement(&camera, delta, keys, mousedeltax);
-	
+
 	// Draw (to the framebuffer)
 	tau_gra_framebuffer_use(&framebuffer);
 	tau_gra_clear(TAU_CLEAR_DEPTHBUFFER);
-	
+
 	// Backdrop, the ground and the ceiling
 	// The colouring is handled withing the shader itself.
 	tau_gra_shader_use(&shader_backdrop);
 	tau_gra_disableDepthTest();
 	tau_gra_ren_mesh_unitsquare();
 	tau_gra_enableDepthTest();
-	
+
 	// Prepare the default shader
 	tau_gra_shader_use(&shader_default);
 	tau_gra_shader_setuniformInt1(&shader_default, "texture0", 0);
@@ -278,7 +268,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 		tau_gra_texture_use(&texture, TAU_TEXTUREUNIT_0);
 		tau_gra_ren_mesh(&part);
 	}
-	
+
 	// Entities
 	for (ENTITY& e: thisworld.entities)
 	{
@@ -299,7 +289,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 			e.y = camera->GetPosition().z;
 			
 		}
-		
+
 		switch(e.eid)
 		{
 			default:
@@ -328,7 +318,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 				model           = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
 				break;
 		}
-		
+
 		if (e.flags & E_FLAG_HANDSELECT)
 			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(0.2f, 0.75f + sin(frame/256.0f)/8.0f, 0.7f)));
 		else
@@ -338,10 +328,10 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 		tau_gra_texture_use(&e.texture, TAU_TEXTUREUNIT_0);
 		tau_gra_ren_mesh(mesh);
 	}
-	
+
 	// Make sure we're using the default tint value...
 	tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
-	
+
 	// Render to screen
 	float aspectratio = (float)(video.width) / (float)(video.height);
 	tau_gra_framebuffer_use(nullptr);
@@ -354,7 +344,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	tau_gra_shader_setuniformInt1(&shader_screen, "istext", 0);
 	tau_gra_texture_use(&framebuffer.attachedtexture, TAU_TEXTUREUNIT_0);
 	tau_gra_ren_mesh_unitsquare();
-	
+
 	// HUD
 	tau_gra_disableDepthTest();
 	{
@@ -385,6 +375,5 @@ void g_world_quit(void)
 	tau_gra_mesh_delete(&mesh_panel);
 	tau_gra_mesh_delete(&mesh_crate);
 	tau_gra_mesh_delete(&mesh_indent);
-	
 	g_world_destroy(&thisworld);
 }
