@@ -73,7 +73,6 @@ void begin_world(CTauCamera** camera)
 	SHADER  shatext = g_world_getshader (shader_text_index);
 	TEXTURE tex     = g_world_gettexture(texture_exclamation);
 	FONT    font    = g_world_getfont   ();
-	glm::mat4 text_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
 
 	// Disable depth testing throughout the loading screen, as it is
 	// not needed. This is more of a 2D loading screen.
@@ -87,17 +86,6 @@ void begin_world(CTauCamera** camera)
 	tau_gra_shader_setuniformInt1(&sha, "texture0", 0);
 	tau_gra_texture_use(&tex, TAU_TEXTUREUNIT_0);
 	tau_gra_ren_mesh_unitsquare();
-
-	// Text
-	/*
-	tau_gra_shader_use(&shatext);
-	tau_gra_shader_setuniformInt1(&shatext, "texture0", 0);
-	tau_gra_shader_setuniformFlt1(&shatext, "totaltime", 0.0f);
-	tau_gra_shader_setuniformInt1(&shatext, "rainbow", 0);
-	tau_gra_shader_setuniformMat4(&shatext, "proj", glm::value_ptr(text_projection));
-	tau_gra_font_rendertext(&font, &shatext, "Persistent data put into memory.",   0, 2+32, 1.75f);
-	tau_gra_font_rendertext(&font, &shatext, "Starting world in a few seconds...", 0, 2,    1.75f);
-	*/
 	
 	// Show the scene, re-enable the depth testing.
 	tau_gra_updatewindow();
