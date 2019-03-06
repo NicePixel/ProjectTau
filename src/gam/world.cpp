@@ -125,7 +125,7 @@ void hands_pickupnearest(CTauCamera* camera)
 	const float MAX_PICKUPDIST = 14.0f;
 	
 	// Only certain entities can be picked up...
-	// One is EID_CRATE, the create entity.
+	// One is EID_CRATE, the crate entity.
 	for (ENTITY& e: thisworld.entities)
 	{
 		if (e.eid != EID::CRATE)
