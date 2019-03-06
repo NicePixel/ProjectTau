@@ -78,7 +78,7 @@ void g_world_start(CTauCamera** newcamera)
 	{
 		switch(e.eid)
 		{
-			case EID_PLAYERSPAWN:
+			case EID::PLAYERSPAWN:
 				TED_PRINT_INFO(std::to_string(e.angle));
 				*newcamera = new CTauCamera((float) e.x, CAMERA_HEIGHT, (float) e.y, aspectratio);
 				(*newcamera)->Turn(e.angle);
@@ -128,7 +128,7 @@ void hands_pickupnearest(CTauCamera* camera)
 	// One is EID_CRATE, the create entity.
 	for (ENTITY& e: thisworld.entities)
 	{
-		if (e.eid != EID_CRATE)
+		if (e.eid != EID::CRATE)
 			continue;
 		float alpha         = camera->GetAngle();
 		glm::vec3 camerapos = camera->GetPosition();
@@ -303,7 +303,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 		switch(e.eid)
 		{
 			default:
-			case EID_PLAYERSPAWN:
+			case EID::PLAYERSPAWN:
 				{
 				glm::vec3 camerapos = camera->GetPosition();
 				float dx = camerapos.x - e.x;
@@ -316,12 +316,12 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 				model           = glm::scale(model, glm::vec3(1.0, e.height, e.width));
 				}
 				break;
-			case EID_CRATEINDENT:
+			case EID::CRATEINDENT:
 				mesh            = &mesh_indent;
 				model           = glm::translate(model, glm::vec3((float)e.x, 0.0f, (float)e.y));
 				model           = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
 				break;
-			case EID_CRATE:
+			case EID::CRATE:
 				mesh            = &mesh_crate;
 				model           = glm::translate(model, glm::vec3(render_x, render_height, render_y));
 				model           = glm::rotate(model, -render_rotate, glm::vec3(0.0f, 1.0f, 0.0f));

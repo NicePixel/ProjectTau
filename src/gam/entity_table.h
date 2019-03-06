@@ -1,4 +1,9 @@
 #pragma once 
-#define EID_PLAYERSPAWN 1
-#define EID_CRATEINDENT 2
-#define EID_CRATE       3
+
+enum EID
+{
+	NONE         = 0x00,
+	PLAYERSPAWN  = 0x01,
+	CRATEINDENT  = 0x02,
+	CRATE        = 0x03
+};

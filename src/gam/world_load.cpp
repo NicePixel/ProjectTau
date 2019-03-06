@@ -145,14 +145,14 @@ arr[5] = Nx; arr[6] = Ny; arr[7] = Nz;
 		{
 			nlohmann::json edata = *it;
 			ENTITY e;
-			e.eid     = (int)   edata[0];
-			e.id      = (int)   edata[1];
-			e.x       = (float) edata[2][0];
-			e.y       = (float) edata[2][1];
-			e.width   = (float) edata[3][0];
-			e.height  = (float) edata[3][1];
-			e.angle   = (float) edata[4];
-			e.flags   = 0;
+			e.eid     = (enum EID) edata[0];
+			e.id      = (int)      edata[1];
+			e.x       = (float)    edata[2][0];
+			e.y       = (float)    edata[2][1];
+			e.width   = (float)    edata[3][0];
+			e.height  = (float)    edata[3][1];
+			e.angle   = (float)    edata[4];
+			e.flags   = (int)      0;
 			e.texture = texturedata[edata[5]];
 			world->entities.push_back(e);
 		}
