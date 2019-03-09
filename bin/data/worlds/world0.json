@@ -9,7 +9,8 @@
 	[
 		"data/textures/wall0.png",
 		"data/textures/falcon.png",
-		"data/textures/ico_phoenix.png"
+		"data/textures/ico_phoenix.png",
+		"data/textures/crate.png"
 	],
 	"type-count": 2,
 	"types":
@@ -34,6 +35,6 @@
 	[
 		[1, -1, [16, 16], [2, 2], 3.1415, 2],
 		[2, -1, [16, 48], [0, 0], 0.0,    0],
-		[3, -1, [16, 48], [8, 0], 0.0,    0]
+		[3, -1, [16, 48], [8, 0], 0.0,    3]
 	]
 }
