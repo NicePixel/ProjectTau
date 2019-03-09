@@ -111,10 +111,7 @@ static bool intersect(glm::vec2 p1, glm::vec2 p2, glm::vec2 q1, glm::vec2 q2)
 void hands_drop(void)
 {
 	if (hands)
-	{
 		(*hands).flags ^= E_FLAG_HANDSELECT;
-		TED_PRINT_INFO(std::to_string(hands->flags));
-	}
 	hands = nullptr;
 }
 
@@ -146,8 +143,8 @@ void hands_pickupnearest(CTauCamera* camera)
 			continue;
 		if (entity_in_radius(e, camera, MAX_PICKUPDIST))
 		{
-			e.flags = E_FLAG_HANDSELECT;
-			hands   = &e;
+			e.flags ^= E_FLAG_HANDSELECT;
+			hands    = &e;
 		}
 	}
 }
