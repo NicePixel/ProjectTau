@@ -53,6 +53,7 @@ void main(void)
 	}
 	else
 	{
+		col.rgb *= tintcolor;
 		color.a = 1.0;
 	}
 	
