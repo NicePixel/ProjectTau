@@ -295,8 +295,11 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 			render_y       = camera->GetPosition().z + sin(render_rotate) * 5;
 			e.x = camera->GetPosition().x;
 			e.y = camera->GetPosition().z;
-			
 		}
+		else if ((e.flags & E_FLAG_FLASHCLOSE) && entity_in_radius(e, camera, 8))
+			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(0.2f, 0.75f + sin(frame/256.0f)/8.0f, 0.7f)));
+		else
+			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 
 		switch(e.eid)
 		{
@@ -326,11 +329,6 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 				model           = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
 				break;
 		}
-
-		if (e.flags & E_FLAG_HANDSELECT)
-			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(0.2f, 0.75f + sin(frame/256.0f)/8.0f, 0.7f)));
-		else
-			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 
 		tau_gra_shader_setuniformMat4(&shader_default, "model", glm::value_ptr(model));
 		tau_gra_texture_use(&e.texture, TAU_TEXTUREUNIT_0);

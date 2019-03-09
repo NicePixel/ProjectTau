@@ -152,6 +152,11 @@ arr[5] = Nx; arr[6] = Ny; arr[7] = Nz;
 			e.angle   = (float)    edata[4];
 			e.flags   = (int)      0;
 			e.texture = texturedata[edata[5]];
+			switch(e.eid)
+			{
+				case EID::CRATE: e.flags ^= E_FLAG_FLASHCLOSE; break;
+				default: break;
+			}
 			world->entities.push_back(e);
 		}
 	}
