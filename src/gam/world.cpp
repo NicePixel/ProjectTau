@@ -41,6 +41,28 @@ FONT g_world_getfont(void)
 }
 
 #undef  TED_CURSUB
+#define TED_CURSUB "g_world_loadscreen"
+void g_world_loadscreen(void)
+{
+	// Disable depth testing throughout the loading screen, as it is
+	// not needed. This is more of a 2D loading screen.
+	// Depth testing is enabled afterwards.
+	tau_gra_disableDepthTest();
+
+	// Icon
+	tau_gra_framebuffer_use(nullptr);
+	tau_gra_clear(TAU_CLEAR_COLORANDDEPTHBUFFER);
+	tau_gra_shader_use(&shader_loading);
+	tau_gra_shader_setuniformInt1(&shader_loading, "texture0", 0);
+	tau_gra_texture_use(&textures[texture_exclamation], TAU_TEXTUREUNIT_0);
+	tau_gra_ren_mesh_unitsquare();
+
+	// Show the scene, re-enable the depth testing.
+	tau_gra_updatewindow();
+	tau_gra_enableDepthTest();
+}
+
+#undef  TED_CURSUB
 #define TED_CURSUB "g_world_start_persistent"
 void g_world_start_persistent(void)
 {

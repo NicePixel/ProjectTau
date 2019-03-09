@@ -23,9 +23,7 @@
 #define texture_hudtimer     3
 
 #include "../eng/render.h"
-SHADER g_world_getshader(unsigned int index);
-TEXTURE g_world_gettexture(unsigned int index);
-FONT g_world_getfont(void);
+void g_world_loadscreen(void);
 void g_world_start_persistent(void);
 void g_world_start(CTauCamera** newcamera);
 void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, int mousedeltax, uint32_t frame);

@@ -67,27 +67,7 @@ void fps_tick(float* delta, int* fps)
 #define TED_CURSUB "begin_world"
 void begin_world(CTauCamera** camera)
 {
-	SHADER  sha     = g_world_getshader (shader_loading_index);
-	SHADER  shatext = g_world_getshader (shader_text_index);
-	TEXTURE tex     = g_world_gettexture(texture_exclamation);
-	FONT    font    = g_world_getfont   ();
-
-	// Disable depth testing throughout the loading screen, as it is
-	// not needed. This is more of a 2D loading screen.
-	// Depth testing is enabled afterwards.
-	tau_gra_disableDepthTest();
-
-	// Icon
-	tau_gra_framebuffer_use(nullptr);
-	tau_gra_clear(TAU_CLEAR_COLORANDDEPTHBUFFER);
-	tau_gra_shader_use(&sha);
-	tau_gra_shader_setuniformInt1(&sha, "texture0", 0);
-	tau_gra_texture_use(&tex, TAU_TEXTUREUNIT_0);
-	tau_gra_ren_mesh_unitsquare();
-	
-	// Show the scene, re-enable the depth testing.
-	tau_gra_updatewindow();
-	tau_gra_enableDepthTest();
+	g_world_loadscreen();
 
 	// Start the world,
 	// We should check to see if the important entities exist in the
