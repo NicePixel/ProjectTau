@@ -7,6 +7,9 @@
 #include "world.h"
 #include "entity.h"
 
+// Constants
+const float MAX_PICKUPDIST = 14.0f;
+
 // Persistent data
 static MESH        mesh_panel, mesh_crate, mesh_indent;
 static SHADER      shaders[5];
@@ -133,8 +136,6 @@ bool entity_in_radius(ENTITY e, CTauCamera* camera, float radius)
 #define TED_CURSUB "hands_pickupnearest"
 void hands_pickupnearest(CTauCamera* camera)
 {
-	const float MAX_PICKUPDIST = 14.0f;
-	
 	// Only certain entities can be picked up...
 	// One is EID_CRATE, the crate entity.
 	for (ENTITY& e: thisworld.entities)
@@ -293,7 +294,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 			e.x = camera->GetPosition().x;
 			e.y = camera->GetPosition().z;
 		}
-		else if ((e.flags & E_FLAG_FLASHCLOSE) && entity_in_radius(e, camera, 8))
+		else if ((e.flags & E_FLAG_FLASHCLOSE) && entity_in_radius(e, camera, MAX_PICKUPDIST))
 			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 0.75f + sin(frame/128.0f)/3.0f, 0.1f)));
 		else
 			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
