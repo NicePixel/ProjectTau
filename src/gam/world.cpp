@@ -298,7 +298,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 		{
 			tau_gra_disableDepthTest();
 			render_rotate  = camera->GetAngle();
-			render_height += camera->GetPosition().y * (1.0/8.0);
+			render_height -= 2.0f;
 			render_x       = camera->GetPosition().x + cos(render_rotate) * 5;
 			render_y       = camera->GetPosition().z + sin(render_rotate) * 5;
 			e.x = camera->GetPosition().x;
