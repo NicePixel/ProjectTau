@@ -13,15 +13,6 @@
 		"data/textures/crate.png"
 	],
 	"type-count": 2,
-	"types":
-	[
-		{
-			"texture": 0
-		},
-		{
-			"texture": 1
-		}
-	],
 	"data":
 	[
 		0, [0, 0], [3, 0],

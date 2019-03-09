@@ -37,7 +37,6 @@ void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, WORL
 
 	nlohmann::json config   = tau_config_load(worldpath.c_str());
 	nlohmann::json data     = config["data"];
-	nlohmann::json types    = config["types"];
 	nlohmann::json textures = config["textures"];
 	int typecount           = config["type-count"];
 	std::vector<std::vector<glm::vec4> > walldata(typecount);
@@ -52,7 +51,6 @@ void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, WORL
 			texturedata[i++] = tau_gra_texture_make(texturepath.c_str());
 		}
 	}
-	
 	
 	// Fill wall data
 	{
@@ -92,7 +90,6 @@ void g_world_load(const char* name, std::vector<glm::vec4>& collisionlines, WORL
 	// After gathering, create a mesh and a texture.
 	for (int i = 0; i < typecount; i++)
 	{
-		//std::string texturepath = types[i]["texture"];
 		std::vector<float> bufferdata;
 		std::vector<glm::vec4> walls = walldata.at(i);
 		for (unsigned int j = 0; j < walls.size(); j++)
