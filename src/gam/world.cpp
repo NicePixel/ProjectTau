@@ -25,21 +25,6 @@ static std::vector<glm::vec4> collisions;
 static float totaltime;
 static ENTITY* hands;
 
-SHADER g_world_getshader(unsigned int index)
-{
-	return shaders[index];
-}
-
-TEXTURE g_world_gettexture(unsigned int index)
-{
-	return textures[index];
-}
-
-FONT g_world_getfont(void)
-{
-	return font_default;
-}
-
 #undef  TED_CURSUB
 #define TED_CURSUB "g_world_loadscreen"
 void g_world_loadscreen(void)
