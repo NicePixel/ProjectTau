@@ -297,7 +297,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 			e.y = camera->GetPosition().z;
 		}
 		else if ((e.flags & E_FLAG_FLASHCLOSE) && entity_in_radius(e, camera, 8))
-			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(0.2f, 0.75f + sin(frame/256.0f)/8.0f, 0.7f)));
+			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 0.75f + sin(frame/128.0f)/3.0f, 0.1f)));
 		else
 			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
 
