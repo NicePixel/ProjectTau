@@ -253,9 +253,11 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 {
 	const glm::vec3 screentint(1.0f, 1.0f, 1.0f);
 	const glm::vec3 whitetint (1.0f, 1.0f, 1.0f);
-	bool canpickup            = false;
-	glm::mat4 identity        = glm::mat4(1.0f);
+	float interactable_tint[3] = {0.2f, 0.75f, 0.2f};
+	bool canpickup             = false;
+	glm::mat4 identity         = glm::mat4(1.0f);
 	totaltime += delta;
+	interactable_tint[1] += sin(totaltime * 4.0)/4.0f;
 
 	movement(&camera, delta, keys, mousedeltax);
 
@@ -311,7 +313,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 		else if ((e.flags & E_FLAG_FLASHCLOSE) && entity_in_radius(e, camera, MAX_PICKUPDIST))
 		{
 			canpickup = true;
-			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 0.75f + sin(frame/128.0f)/3.0f, 0.1f)));
+			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", interactable_tint);
 		}
 		else
 			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(whitetint));

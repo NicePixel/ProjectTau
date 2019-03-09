@@ -13,7 +13,7 @@ void g_hud_init(float aspectratio)
 
 void g_hud_tick(float totaltime, float fps, bool hands, bool canpickup, TEXTURE* textures, FONT* font, SHADER* sha)
 {
-	const glm::vec3 flashingcolour(0.2f, 0.75f + sin(totaltime * 10.0)/4.0f, 0.2f);
+	const glm::vec3 flashingcolour(0.2f, 0.75f + sin(totaltime * 4.0)/4.0f, 0.2f);
 	
 	tau_gra_disableDepthTest();
 	{
