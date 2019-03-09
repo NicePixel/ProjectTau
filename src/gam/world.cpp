@@ -119,6 +119,20 @@ void hands_drop(void)
 }
 
 #undef  TED_CURSUB
+#define TED_CURSUB "entity_in_radius"
+bool entity_in_radius(ENTITY e, CTauCamera* camera, float radius)
+{
+	
+	float alpha         = camera->GetAngle();
+	glm::vec3 camerapos = camera->GetPosition();
+	glm::vec2 ray_pos0(camerapos.x, camerapos.z);
+	glm::vec2 ray_pos1(camerapos.x + cos(alpha) * radius, camerapos.z + sin(alpha) * radius);
+	glm::vec2 ent_pos0(e.x - (e.width / 2.0f) * cos(alpha + 3.1415f/2.0f), e.y - (e.width / 2.0f) * sin(alpha + 3.1415f/2.0f));
+	glm::vec2 ent_pos1(e.x + (e.width / 2.0f) * cos(alpha + 3.1415f/2.0f), e.y + (e.width / 2.0f) * sin(alpha + 3.1415f/2.0f));
+	return intersect(ray_pos0, ray_pos1, ent_pos0, ent_pos1);
+}
+
+#undef  TED_CURSUB
 #define TED_CURSUB "hands_pickupnearest"
 void hands_pickupnearest(CTauCamera* camera)
 {
@@ -130,13 +144,7 @@ void hands_pickupnearest(CTauCamera* camera)
 	{
 		if (e.eid != EID::CRATE)
 			continue;
-		float alpha         = camera->GetAngle();
-		glm::vec3 camerapos = camera->GetPosition();
-		glm::vec2 ray_pos0(camerapos.x, camerapos.z);
-		glm::vec2 ray_pos1(camerapos.x + cos(alpha) * MAX_PICKUPDIST, camerapos.z + sin(alpha) * MAX_PICKUPDIST);
-		glm::vec2 ent_pos0(e.x - (e.width / 2.0f) * cos(alpha + 3.1415f/2.0f), e.y - (e.width / 2.0f) * sin(alpha + 3.1415f/2.0f));
-		glm::vec2 ent_pos1(e.x + (e.width / 2.0f) * cos(alpha + 3.1415f/2.0f), e.y + (e.width / 2.0f) * sin(alpha + 3.1415f/2.0f));
-		if (intersect(ray_pos0, ray_pos1, ent_pos0, ent_pos1))
+		if (entity_in_radius(e, camera, MAX_PICKUPDIST))
 		{
 			e.flags = E_FLAG_HANDSELECT;
 			hands   = &e;
@@ -146,8 +154,8 @@ void hands_pickupnearest(CTauCamera* camera)
 
 // Handle player movement
 // Recalculate camera's matrices only if its state changes (moving, rotating...)
-#define RADIUS_COLLISION 64.0f
 #define sgn(x) (x >= 0.0f ? 1.0f : -1.0)
+#define RADIUS_COLLISION 64.0f
 #undef  TED_CURSUB
 #define TED_CURSUB "movement"
 void movement(CTauCamera** camera, float delta, const Uint8* keys, int mousedeltax)
