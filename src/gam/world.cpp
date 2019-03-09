@@ -287,6 +287,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 		
 		if (e.flags & E_FLAG_HANDSELECT)
 		{
+			tau_gra_disableDepthTest();
 			render_rotate  = camera->GetAngle();
 			render_height += camera->GetPosition().y * (1.0/8.0);
 			render_x       = camera->GetPosition().x + cos(render_rotate) * 5;
@@ -331,6 +332,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 		tau_gra_shader_setuniformMat4(&shader_default, "model", glm::value_ptr(model));
 		tau_gra_texture_use(&e.texture, TAU_TEXTUREUNIT_0);
 		tau_gra_ren_mesh(mesh);
+		tau_gra_enableDepthTest();
 	}
 
 	// Make sure we're using the default tint value...
