@@ -6,9 +6,10 @@
 #include "world_load.h"
 #include "world.h"
 #include "entity.h"
+#include "hud.h"
 
 // Constants
-const float MAX_PICKUPDIST = 14.0f;
+const float MAX_PICKUPDIST      = 14.0f;
 
 // Persistent data
 static MESH        mesh_panel, mesh_crate, mesh_indent;
@@ -109,6 +110,7 @@ void g_world_start(CTauCamera** newcamera)
 	tau_gra_shader_use(&shader_backdrop);
 	tau_gra_shader_setuniformFlt3(&shader_backdrop, "colour_ceiling", thisworld.colours[0]);
 	tau_gra_shader_setuniformFlt3(&shader_backdrop, "colour_ground",  thisworld.colours[1]);
+	g_hud_init(aspectratio);
 }
 
 static bool intersect(glm::vec2 p1, glm::vec2 p2, glm::vec2 q1, glm::vec2 q2)
@@ -249,6 +251,8 @@ void movement(CTauCamera** camera, float delta, const Uint8* keys, int mousedelt
 #define TED_CURSUB "g_world_tick"
 void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, int mousedeltax, uint32_t frame)
 {
+	const glm::vec3 screentint(1.0f, 1.0f, 1.0f);
+	const glm::vec3 whitetint (1.0f, 1.0f, 1.0f);
 	bool canpickup            = false;
 	glm::mat4 identity        = glm::mat4(1.0f);
 	totaltime += delta;
@@ -310,7 +314,7 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 0.75f + sin(frame/128.0f)/3.0f, 0.1f)));
 		}
 		else
-			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+			tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(whitetint));
 
 		switch(e.eid)
 		{
@@ -348,10 +352,9 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	}
 
 	// Make sure we're using the default tint value...
-	tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
+	tau_gra_shader_setuniformFlt3(&shader_default, "tintcolor", glm::value_ptr(screentint));
 
 	// Render to screen
-	float aspectratio = (float)(video.width) / (float)(video.height);
 	tau_gra_framebuffer_use(nullptr);
 	tau_gra_clear(TAU_CLEAR_DEPTHBUFFER);
 	tau_gra_shader_use(&shader_screen);
@@ -359,40 +362,12 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 	tau_gra_shader_setuniformFlt2(&shader_screen, "scale2d", glm::value_ptr(glm::vec2(1.0f, 1.0f)));
 	tau_gra_shader_setuniformFlt2(&shader_screen, "pos2d", glm::value_ptr(glm::vec2(0.0f, 0.0f)));
 	tau_gra_shader_setuniformFlt2(&shader_screen, "uvscale", glm::value_ptr(glm::vec2(1.0f, 1.0f)));
+	tau_gra_shader_setuniformFlt3(&shader_screen, "tintcolor", glm::value_ptr(whitetint));
 	tau_gra_shader_setuniformInt1(&shader_screen, "istext", 0);
 	tau_gra_texture_use(&framebuffer.attachedtexture, TAU_TEXTUREUNIT_0);
 	tau_gra_ren_mesh_unitsquare();
 
-	// HUD
-	tau_gra_disableDepthTest();
-	{
-		glm::vec3 colourhud(1.0f, 1.0f, 1.0f);
-		tau_gra_shader_setuniformFlt3(&shader_screen, "tintcolor", glm::value_ptr(colourhud));
-		tau_gra_shader_setuniformFlt2(&shader_screen, "uvscale", glm::value_ptr(glm::vec2(1.0f, -1.0f)));
-		
-		// Timer
-		tau_gra_shader_setuniformFlt2(&shader_screen, "scale2d", glm::value_ptr(glm::vec2(0.05f, 0.05f*aspectratio)));
-		tau_gra_shader_setuniformFlt2(&shader_screen, "pos2d", glm::value_ptr(glm::vec2(-0.95f, -1.0f + 0.05*aspectratio)));
-		tau_gra_texture_use(&textures[texture_hudtimer], TAU_TEXTUREUNIT_0);
-		tau_gra_ren_mesh_unitsquare();
-		tau_gra_shader_setuniformInt1(&shader_screen, "istext", 1);
-		tau_gra_font_rendertext(&font_default, &shader_screen, std::to_string((int)floor(totaltime)) + "s; FPS:" + std::to_string(fps), 22, 0, 0.005f, aspectratio);
-		
-		// Hand (if close to an entity or holding one)
-		if (canpickup || hands)
-		{
-			if (hands)
-				tau_gra_shader_setuniformFlt3(&shader_screen, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 0.75f + sin(frame/128.0f)/3.0f, 0.1f)));
-			tau_gra_shader_setuniformInt1(&shader_screen, "istext", 0);
-			tau_gra_shader_setuniformFlt2(&shader_screen, "scale2d", glm::value_ptr(glm::vec2(0.05f, 0.05f*aspectratio)));
-			tau_gra_shader_setuniformFlt2(&shader_screen, "pos2d", glm::value_ptr(glm::vec2(0.0f, -1.0f + 0.05*aspectratio)));
-			tau_gra_texture_use(&textures[texture_hudhand], TAU_TEXTUREUNIT_0);
-			tau_gra_ren_mesh_unitsquare();
-			if (hands)
-				tau_gra_shader_setuniformFlt3(&shader_screen, "tintcolor", glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
-		}
-	}
-	tau_gra_enableDepthTest();
+	g_hud_tick(totaltime, fps, hands, canpickup, textures, &font_default, &shader_screen);
 }
 
 void g_world_quit(void)
