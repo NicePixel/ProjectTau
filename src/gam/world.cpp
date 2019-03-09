@@ -311,14 +311,14 @@ void g_world_tick(CTauCamera* camera, float delta, int fps, const Uint8* keys, i
 				float angle = -atan2(dy, dx);
 		
 				mesh            = &mesh_panel;
-				model           = glm::translate(model, glm::vec3((float)e.x, (float)e.height, (float)e.y));
+				model           = glm::translate(model, glm::vec3(render_x, render_height, render_y));
 				model           = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
 				model           = glm::scale(model, glm::vec3(1.0, e.height, e.width));
 				}
 				break;
 			case EID::CRATEINDENT:
 				mesh            = &mesh_indent;
-				model           = glm::translate(model, glm::vec3((float)e.x, 0.0f, (float)e.y));
+				model           = glm::translate(model, glm::vec3(render_x, render_height, render_y));
 				model           = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
 				break;
 			case EID::CRATE:
