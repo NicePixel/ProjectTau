@@ -1,0 +1,4 @@
+{
+	"vertex": "data/shaders/backdrop_vtx.glsl",
+	"fragment": "data/shaders/backdrop_frg.glsl"
+}

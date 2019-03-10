@@ -1,0 +1,4 @@
+{
+	"vertex": "data/shaders/default_vtx.glsl",
+	"fragment": "data/shaders/default_frg.glsl"
+}
