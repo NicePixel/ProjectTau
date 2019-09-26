@@ -1,5 +1,5 @@
 #include <GL/glew.h>
-#include <GL/GL.h>
+#include <GL/gl.h>
 #include "ogl_render.h"
 
 void tau_gra_ren_mesh(MESH* mesh)

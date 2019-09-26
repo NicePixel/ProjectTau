@@ -4,7 +4,7 @@
 #pragma once
 #include "../global.h"
 #include <GL/glew.h>
-#include <GL/GL.h>
+#include <GL/gl.h>
 
 // Shaders can use multiple textures at once.
 // By default, GL_TEXTURE0, the first texture unit, is used.
