@@ -13,7 +13,7 @@ out vec4 color;
 
 void main(void)
 {
-	if (onlycolor)
+	if (onlycolor == 0)
 	{
 		color.rgb = tintcolor;
 		color.a = 1.0;

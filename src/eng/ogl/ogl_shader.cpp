@@ -175,6 +175,7 @@ GLuint initshader(const std::string& shaderSource, GLenum shaderType)
 			err += errorLog.at(i);
 		TED_PRINT_ERROR(err);
 
+		TED_PRINT_ERROR("There is a shader compilation issue!");
 		glDeleteShader(res);
 		throw CTauGraException("Shader compilation error");
 	}
