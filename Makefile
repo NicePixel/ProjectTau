@@ -7,7 +7,9 @@ OBJECT_FILES=$(OBJ_DIR)eng_camera.o $(OBJ_DIR)eng_configuration.o $(OBJ_DIR)eng_
 
 LIB_WINDOWS=-L./lib/ -lmingw32 -lSDL2 -lSDL2_image -lopengl32 -lglew32 -lfreetype -lSDL2_mixer
 LIB=-lSDL2 -lSDL2_image -lopengl32 -lglew32 -lfreetype -lSDL2_mixer
-INCLUDE=-I./ -I./include/
+# MAYBE FIX FREETYPE INCLUDE DIRECTORY???
+# DONT BLOODY HARDCODE IT.
+INCLUDE=-I./ -I./include/ -I/usr/include/freetype2/
 
 LFLAGS=
 CFLAGS=-std=c++17 -Wall -g -DGLM_ENABLE_EXPERIMENTAL -DTED_OGL $(INCLUDE)
