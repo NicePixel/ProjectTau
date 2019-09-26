@@ -1,6 +1,5 @@
 lib/
 obj/
-include/
 bin/*
 !bin/*.zip
 !bin/data
